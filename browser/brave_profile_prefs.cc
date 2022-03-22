@@ -348,6 +348,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
 #if BUILDFLAG(ENABLE_CUSTOM_BACKGROUND)
   registry->RegisterBooleanPref(kNewTabPageCustomBackgroundEnabled, false);
+  registry->RegisterBooleanPref(kNewTabPageSolidColorBackgroundEnabled, false);
+  registry->RegisterStringPref(kNewTabPageSelectedSolidColorBackground,
+                               "#151E9A");
 #endif
 
 #if BUILDFLAG(ETHEREUM_REMOTE_CLIENT_ENABLED)

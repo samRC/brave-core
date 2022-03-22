@@ -23,7 +23,8 @@ NTPCustomBackgroundImagesServiceDelegate::
 NTPCustomBackgroundImagesServiceDelegate::
     ~NTPCustomBackgroundImagesServiceDelegate() = default;
 
-bool NTPCustomBackgroundImagesServiceDelegate::IsCustomBackgroundEnabled() {
+bool NTPCustomBackgroundImagesServiceDelegate::
+    IsCustomImageBackgroundEnabled() {
   auto* prefs = profile_->GetPrefs();
   if (prefs->IsManagedPreference(prefs::kNtpCustomBackgroundDict))
     return false;
@@ -33,9 +34,25 @@ bool NTPCustomBackgroundImagesServiceDelegate::IsCustomBackgroundEnabled() {
 
 base::FilePath NTPCustomBackgroundImagesServiceDelegate::
     GetCustomBackgroundImageLocalFilePath() {
-  if (!IsCustomBackgroundEnabled())
+  if (!IsCustomImageBackgroundEnabled())
     return base::FilePath();
   return profile_->GetPath().AppendASCII(kSanitizedImageFileName);
+}
+
+bool NTPCustomBackgroundImagesServiceDelegate::IsSolidColorBackgroundEnabled() {
+  auto* prefs = profile_->GetPrefs();
+  if (prefs->IsManagedPreference(prefs::kNtpCustomBackgroundDict))
+    return false;
+
+  return prefs->GetBoolean(kNewTabPageSolidColorBackgroundEnabled);
+}
+
+std::string NTPCustomBackgroundImagesServiceDelegate::GetSolidColor() {
+  if (!IsSolidColorBackgroundEnabled())
+    return {};
+
+  return profile_->GetPrefs()->GetString(
+      kNewTabPageSelectedSolidColorBackground);
 }
 
 }  // namespace ntp_background_images
