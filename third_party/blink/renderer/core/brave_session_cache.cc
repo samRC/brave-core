@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "brave/third_party/blink/renderer/core/brave_session_cache.h"
 
 #include "base/command_line.h"
 #include "base/sequence_checker.h"
@@ -11,6 +11,7 @@
 #include "brave/third_party/blink/renderer/brave_farbling_constants.h"
 #include "brave/third_party/blink/renderer/brave_font_whitelist.h"
 #include "crypto/hmac.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -45,7 +46,7 @@ float ConstantMultiplier(double fudge_factor, float value, size_t index) {
 
 float PseudoRandomSequence(uint64_t seed, float value, size_t index) {
   static uint64_t v;
-  const double maxUInt64AsDouble = UINT64_MAX;
+  const double maxUInt64AsDouble = static_cast<double>(UINT64_MAX);
   if (index == 0) {
     // start of loop, reset to initial seed which was passed in and is based on
     // the domain key
@@ -124,6 +125,47 @@ bool AllowFontFamily(ExecutionContext* context,
   return true;
 }
 
+int MaybeFarbleInteger(ExecutionContext* context,
+                       brave::FarbleKey key,
+                       int spoof_value,
+                       int min_value,
+                       int max_value,
+                       int defaultValue) {
+  if (brave::AllowScreenFingerprinting(context)) {
+    return defaultValue;
+  }
+  BraveSessionCache& cache = BraveSessionCache::From(*context);
+  return cache.FarbledInteger(key, spoof_value, min_value, max_value);
+}
+
+bool AllowScreenFingerprinting(ExecutionContext* context) {
+// Don't apply this protection on mobile.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return true;
+#else
+  if (base::FeatureList::IsEnabled(
+          blink::features::kBraveBlockScreenFingerprinting)) {
+    return false;
+  }
+  return AllowFingerprinting(context);
+#endif
+}
+
+int FarbledPointerScreenCoordinate(const DOMWindow* view,
+                                   FarbleKey key,
+                                   int clientCoordinate,
+                                   int trueScreenCoordinate) {
+  const blink::LocalDOMWindow* local_dom_window =
+      blink::DynamicTo<blink::LocalDOMWindow>(view);
+  if (!local_dom_window) {
+    return trueScreenCoordinate;
+  }
+  ExecutionContext* context = local_dom_window->GetExecutionContext();
+  double zoom_factor = local_dom_window->GetFrame()->PageZoomFactor();
+  return MaybeFarbleInteger(context, key, zoom_factor * clientCoordinate, 0, 8,
+                            trueScreenCoordinate);
+}
+
 BraveSessionCache::BraveSessionCache(ExecutionContext& context)
     : Supplement<ExecutionContext>(context) {
   farbling_enabled_ = false;
@@ -190,7 +232,7 @@ AudioFarblingCallback BraveSessionCache::GetAudioFarblingCallback(
       }
       case BraveFarblingLevel::BALANCED: {
         const uint64_t* fudge = reinterpret_cast<const uint64_t*>(domain_key_);
-        const double maxUInt64AsDouble = UINT64_MAX;
+        const double maxUInt64AsDouble = static_cast<double>(UINT64_MAX);
         double fudge_factor = 0.99 + ((*fudge / maxUInt64AsDouble) / 100);
         VLOG(1) << "audio fudge factor (based on session token) = "
                 << fudge_factor;
@@ -296,6 +338,19 @@ WTF::String BraveSessionCache::FarbledUserAgent(WTF::String real_user_agent) {
   return result.ToString();
 }
 
+int BraveSessionCache::FarbledInteger(FarbleKey key,
+                                      int spoof_value,
+                                      int min_random_offset,
+                                      int max_random_offset) {
+  if (farbled_integers_.count(key) == 0) {
+    FarblingPRNG prng = MakePseudoRandomGenerator(key);
+    farbled_integers_[key] =
+        prng() % (1 + max_random_offset - min_random_offset) +
+        min_random_offset;
+  }
+  return farbled_integers_[key] + spoof_value;
+}
+
 bool BraveSessionCache::AllowFontFamily(
     blink::WebContentSettingsClient* settings,
     const AtomicString& family_name) {
@@ -315,7 +370,7 @@ bool BraveSessionCache::AllowFontFamily(
               family_name.Utf8()))
         return true;
 #endif
-      FarblingPRNG prng = MakePseudoRandomGenerator();
+      FarblingPRNG prng = MakePseudoRandomGenerator(FarbleKey::FONT_FAMILY);
       prng.discard(family_name.Impl()->GetHash() % 16);
       return ((prng() % 2) == 0);
     }
@@ -325,11 +380,13 @@ bool BraveSessionCache::AllowFontFamily(
   return true;
 }
 
-FarblingPRNG BraveSessionCache::MakePseudoRandomGenerator() {
-  uint64_t seed = *reinterpret_cast<uint64_t*>(domain_key_);
+FarblingPRNG BraveSessionCache::MakePseudoRandomGenerator(FarbleKey key) {
+  uint64_t seed = *reinterpret_cast<uint64_t*>(domain_key_) ^ (unsigned int)key;
   return FarblingPRNG(seed);
 }
 
-}  // namespace brave
+FarblingPRNG BraveSessionCache::MakePseudoRandomGenerator() {
+  return MakePseudoRandomGenerator(FarbleKey::NONE);
+}
 
-#include "src/third_party/blink/renderer/core/execution_context/execution_context.cc"
+}  // namespace brave
