@@ -43,6 +43,7 @@ void BatAdsServiceImpl::SetEnvironment(
 void BatAdsServiceImpl::SetSysInfo(ads::mojom::SysInfoPtr sys_info,
                                    SetSysInfoCallback callback) {
   DCHECK(!is_initialized_);
+  ads::SysInfo().device_id = sys_info->device_id;
   ads::SysInfo().is_uncertain_future = sys_info->is_uncertain_future;
   std::move(callback).Run();
 }
