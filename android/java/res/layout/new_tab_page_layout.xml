@@ -57,7 +57,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <!-- Search box -->
             <include layout="@layout/fake_search_box_layout"/>
@@ -120,7 +121,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/newsRecycler"
             android:layout_width="match_parent"
-            android:layout_height="750dp"
+            android:layout_height="match_parent"
             android:overScrollMode="never"
             android:visibility="gone"
          />
@@ -138,7 +139,8 @@
             android:id="@+id/image_credit_layout"
             android:layout_width="match_parent"
             android:layout_marginBottom="30dp"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/credit_text"

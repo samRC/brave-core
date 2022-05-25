@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="-20dp"
     android:background="@drawable/card_bg"
     android:orientation="vertical">
 
@@ -58,7 +57,6 @@
         android:background="@drawable/news_button_bg"
         android:layout_marginHorizontal="60dp"
         android:orientation="horizontal">
-
 
         <ProgressBar
             android:id="@+id/optin_loading_spinner"

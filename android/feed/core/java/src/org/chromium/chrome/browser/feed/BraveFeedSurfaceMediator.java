@@ -6,6 +6,7 @@
 package org.chromium.chrome.browser.feed;
 
 import android.content.Context;
+import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
@@ -38,8 +39,8 @@ public class BraveFeedSurfaceMediator extends FeedSurfaceMediator {
             return;
         }
 
-        NestedScrollView view =
-                ((BraveFeedSurfaceCoordinator) mCoordinator).getScrollViewForPolicy();
+        // NestedScrollView view =
+        FrameLayout view = ((BraveFeedSurfaceCoordinator) mCoordinator).getScrollViewForPolicy();
         if (view != null) {
             return;
         }

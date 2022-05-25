@@ -959,13 +959,14 @@ public abstract class BraveActivity<C extends ChromeActivityComponent> extends C
     // Sets NTP background
     public void setBackground(Bitmap bgWallpaper) {
         CompositorViewHolder compositorView = findViewById(R.id.compositor_view_holder);
-
+        Log.e("tapan", "compositorView:");
         if (compositorView != null) {
+            Log.e("tapan", "compositorView not null");
             ViewGroup root = (ViewGroup) compositorView.getChildAt(1);
-
-            if (root.getChildAt(0) instanceof NestedScrollView) {
-                NestedScrollView scrollView = (NestedScrollView) root.getChildAt(0);
-
+            Log.e("tapan", root.getChildAt(0).getClass().getName());
+            if (root.getChildAt(0) instanceof FrameLayout) { // NestedScrollView) {
+                // NestedScrollView scrollView = (NestedScrollView) root.getChildAt(0);
+                FrameLayout scrollView = (FrameLayout) root.getChildAt(0);
                 DisplayMetrics displayMetrics = new DisplayMetrics();
                 getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
                 int mDeviceHeight = displayMetrics.heightPixels;
@@ -989,6 +990,8 @@ public abstract class BraveActivity<C extends ChromeActivityComponent> extends C
                             public void onLoadCleared(@Nullable Drawable placeholder) {}
                         });
             }
+        } else {
+            Log.e("tapan", "compositorView null");
         }
     }
 

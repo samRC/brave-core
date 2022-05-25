@@ -41,7 +41,9 @@ public class BraveFeedSurfaceCoordinator extends FeedSurfaceCoordinator {
     private FrameLayout mRootView;
 
     // Own members.
-    private @Nullable NestedScrollView mScrollViewForPolicy;
+    // private @Nullable NestedScrollView mScrollViewForPolicy;
+
+    private @Nullable FrameLayout mScrollViewForPolicy;
 
     public BraveFeedSurfaceCoordinator(Activity activity, SnackbarManager snackbarManager,
             WindowAndroid windowAndroid, @Nullable SnapScrollHelper snapScrollHelper,
@@ -65,7 +67,7 @@ public class BraveFeedSurfaceCoordinator extends FeedSurfaceCoordinator {
                 actionDelegate, helpAndFeedbackLauncher);
     }
 
-    public void createScrollViewForPolicy() {
+    /*public void createScrollViewForPolicy() {
         assert mScrollViewForPolicy == null : "mScrollViewForPolicy should be created only once!";
 
         // Remove all previously added views.
@@ -96,6 +98,40 @@ public class BraveFeedSurfaceCoordinator extends FeedSurfaceCoordinator {
     }
 
     public NestedScrollView getScrollViewForPolicy() {
+        return mScrollViewForPolicy;
+    }*/
+
+    public void createScrollViewForPolicy() {
+        assert mScrollViewForPolicy == null : "mScrollViewForPolicy should be created only once!";
+
+        // Remove all previously added views.
+        mRootView.removeAllViews();
+
+        mScrollViewForPolicy = new FrameLayout(mActivity);
+        mScrollViewForPolicy.setLayoutParams(new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        mScrollViewForPolicy.setBackgroundColor(ApiCompatibilityUtils.getColor(
+                mActivity.getResources(), R.color.default_bg_color_baseline));
+        // mScrollViewForPolicy.setVerticalScrollBarEnabled(false);
+
+        // Make scroll view focusable so that it is the next focusable view when the url bar clears
+        // focus.
+        mScrollViewForPolicy.setFocusable(true);
+        mScrollViewForPolicy.setFocusableInTouchMode(true);
+        mScrollViewForPolicy.setContentDescription(
+                mScrollViewForPolicy.getResources().getString(R.string.accessibility_new_tab_page));
+
+        if (mNtpHeader != null) {
+            UiUtils.removeViewFromParent(mNtpHeader);
+            mScrollViewForPolicy.addView(mNtpHeader);
+        }
+        mRootView.addView(mScrollViewForPolicy);
+        // mScrollViewForPolicy.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        // mScrollViewForPolicy.setFillViewport(true);
+        // mScrollViewForPolicy.requestFocus();
+    }
+
+    public FrameLayout getScrollViewForPolicy() {
         return mScrollViewForPolicy;
     }
 
