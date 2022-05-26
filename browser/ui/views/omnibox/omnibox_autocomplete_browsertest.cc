@@ -15,6 +15,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
@@ -37,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAutocompleteTest, AutocompleteDisabledTest) {
 
   // Initially autocomplete is enabled.
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
-      kAutocompleteEnabled));
+      omnibox::kAutocompleteEnabled));
 
   edit_model()->SetUserText(u"foo");
   edit_model()->StartAutocomplete(false, false);
@@ -48,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAutocompleteTest, AutocompleteDisabledTest) {
 
   edit_model()->StopAutocomplete();
 
-  browser()->profile()->GetPrefs()->SetBoolean(kAutocompleteEnabled,
+  browser()->profile()->GetPrefs()->SetBoolean(omnibox::kAutocompleteEnabled,
                                                false);
   edit_model()->SetUserText(u"bar");
   edit_model()->StartAutocomplete(false, false);
@@ -56,15 +57,4 @@ IN_PROC_BROWSER_TEST_F(OmniboxAutocompleteTest, AutocompleteDisabledTest) {
   // Check popup isn't opened and result is empty.
   EXPECT_TRUE(edit_model()->result().empty());
   EXPECT_FALSE(popup_view()->IsOpen());
-}
-
-IN_PROC_BROWSER_TEST_F(OmniboxAutocompleteTest, TopSiteSuggestionsEnabledTest) {
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
-      kTopSiteSuggestionsEnabled));
-}
-
-IN_PROC_BROWSER_TEST_F(OmniboxAutocompleteTest,
-    BraveSuggestedSiteSuggestionsEnabledTest) {
-  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
-      kBraveSuggestedSiteSuggestionsEnabled));
 }
