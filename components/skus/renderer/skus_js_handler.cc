@@ -108,6 +108,11 @@ void SkusJSHandler::BindFunctionsToObject(v8::Isolate* isolate,
   BindFunctionToObject(isolate, skus_obj, "credential_summary",
                        base::BindRepeating(&SkusJSHandler::CredentialSummary,
                                            base::Unretained(this), isolate));
+
+  // window.chrome.braveSkus.submit_receipt
+  BindFunctionToObject(isolate, skus_obj, "submit_receipt",
+                       base::BindRepeating(&SkusJSHandler::SubmitReceipt,
+                                           base::Unretained(this), isolate));
 }
 
 template <typename Sig>
@@ -348,6 +353,51 @@ void SkusJSHandler::OnCredentialSummary(
   v8::Local<v8::Value> local_result =
       content::V8ValueConverter::Create()->ToV8Value(result_dict, context);
   std::ignore = resolver->Resolve(context, local_result);
+}
+
+// window.chrome.braveSkus.submit_receipt
+v8::Local<v8::Promise> SkusJSHandler::SubmitReceipt(v8::Isolate* isolate,
+                                                    std::string order_id,
+                                                    std::string receipt) {
+  if (!EnsureConnected())
+    return v8::Local<v8::Promise>();
+
+  v8::MaybeLocal<v8::Promise::Resolver> resolver =
+      v8::Promise::Resolver::New(isolate->GetCurrentContext());
+  if (resolver.IsEmpty()) {
+    return v8::Local<v8::Promise>();
+  }
+
+  auto promise_resolver(
+      v8::Global<v8::Promise::Resolver>(isolate, resolver.ToLocalChecked()));
+  auto context_old(
+      v8::Global<v8::Context>(isolate, isolate->GetCurrentContext()));
+
+  skus_service_->SubmitReceipt(
+      order_id, receipt,
+      base::BindOnce(&SkusJSHandler::OnSubmitReceipt, base::Unretained(this),
+                     std::move(promise_resolver), isolate,
+                     std::move(context_old)));
+
+  return resolver.ToLocalChecked()->GetPromise();
+}
+void SkusJSHandler::OnSubmitReceipt(
+    v8::Global<v8::Promise::Resolver> promise_resolver,
+    v8::Isolate* isolate,
+    v8::Global<v8::Context> context_old,
+    const std::string& response) {
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context = context_old.Get(isolate);
+  v8::Context::Scope context_scope(context);
+  v8::MicrotasksScope microtasks(isolate,
+                                 v8::MicrotasksScope::kDoNotRunMicrotasks);
+
+  v8::Local<v8::Promise::Resolver> resolver = promise_resolver.Get(isolate);
+  v8::Local<v8::String> result;
+  result =
+      v8::String::NewFromUtf8(isolate, response.c_str()).ToLocalChecked();
+
+  std::ignore = resolver->Resolve(context, result);
 }
 
 }  // namespace skus
