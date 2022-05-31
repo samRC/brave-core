@@ -17,6 +17,7 @@ import android.os.Build;
 import android.graphics.Bitmap;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.content.SharedPreferences;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import androidx.core.widget.ImageViewCompat;
@@ -197,7 +198,15 @@ public class BraveNtpAdapter
             newsOptinViewHolder.optinClose.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    SharedPreferences sharedPreferences = ContextUtils.getAppSharedPreferences();
+                    SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+                    sharedPreferencesEditor.putBoolean(BraveNewsPreferences.PREF_SHOW_OPTIN, false);
+                    sharedPreferencesEditor.apply();
+                    BravePrefServiceBridge.getInstance().setNewsOptIn(true);
+                    BravePrefServiceBridge.getInstance().setShowNews(false);
                     //TODO: optin close
+                    notifyItemChanged(2);
                 }
             });
 
@@ -214,7 +223,17 @@ public class BraveNtpAdapter
                     newsOptinViewHolder.optinButton.setClickable(false);
                     newsOptinViewHolder.optinTv.setVisibility(View.INVISIBLE);
                     newsOptinViewHolder.optinLoadingSpinner.setVisibility(View.VISIBLE);
+
+                    SharedPreferences sharedPreferences = ContextUtils.getAppSharedPreferences();
+                    SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+                    sharedPreferencesEditor.putBoolean(BraveNewsPreferences.PREF_SHOW_OPTIN, false);
+                    sharedPreferencesEditor.apply();
+                    BravePrefServiceBridge.getInstance().setNewsOptIn(true);
+                    BravePrefServiceBridge.getInstance().setShowNews(true);
+
                     //TODO: next things
+
+                    notifyItemChanged(2);
                 }
             });
         } else if(holder instanceof NewsLoadingViewHolder) {
@@ -222,7 +241,6 @@ public class BraveNtpAdapter
 
         } else if(holder instanceof NewsViewHolder) {
             NewsViewHolder newsViewHolder = (NewsViewHolder) holder;
-
         }
     }
 

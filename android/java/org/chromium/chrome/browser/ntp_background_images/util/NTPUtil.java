@@ -217,6 +217,7 @@ public class NTPUtil {
     }
 
     public static void showBREBottomBanner(View view) {
+        Log.e("tapan","showBREBottomBanner");
         Context context = ContextUtils.getApplicationContext();
         if (!PackageUtils.isFirstInstall(context)
                 && BraveAdsNativeHelper.nativeIsBraveAdsEnabled(Profile.getLastUsedRegularProfile())
@@ -246,6 +247,7 @@ public class NTPUtil {
                 }
             });
         }
+        Log.e("tapan","showBREBottomBanner done");
     }
 
     public static void showNonDisruptiveBanner(ChromeActivity chromeActivity, View view, int ntpType, SponsoredTab sponsoredTab, NewTabPageListener newTabPageListener) {
