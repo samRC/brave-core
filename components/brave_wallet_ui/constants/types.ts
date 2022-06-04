@@ -269,6 +269,7 @@ export interface PageState {
   showAddModal: boolean
   isCryptoWalletsInitialized: boolean
   isMetaMaskInitialized: boolean
+  selectedCoinMarket: BraveWallet.CoinMarket | undefined
 }
 
 export interface WalletPageState {
@@ -570,11 +571,11 @@ export enum WalletRoutes {
   OnboardingBackupWallet = '/crypto/onboarding/backup-wallet',
   OnboardingImportMetaMask = '/crypto/onboarding/import-metamask-wallet',
   OnboardingImportCryptoWallets = '/crypto/onboarding/import-legacy-wallet',
-  
+
   // market
   Market = '/crypto/market',
   MarketSub = '/crypto/market/:id?',
-  
+
   // accounts
   Accounts = '/crypto/accounts',
   Account = '/crypto/accounts/:id',

@@ -25,6 +25,7 @@ import { StyledWrapper } from './style'
 import { TopTabNav, WalletBanner, EditVisibleAssetsModal } from '../../'
 import { PortfolioOverview } from '../portfolio/portfolio-overview'
 import { PortfolioAsset } from '../portfolio/portfolio-asset'
+import { MarketView } from '../market'
 import { Accounts } from '../accounts/accounts'
 import { Account } from '../accounts/account'
 import { AddAccountModal } from '../../popup-modals/add-account-modal/add-account-modal'
@@ -213,12 +214,20 @@ const CryptoView = (props: Props) => {
           <Accounts />
         </Route>
 
-        <Route path={WalletRoutes.MarketSub} exact={true}>
+        <Route path={WalletRoutes.Market} exact={true}>
+          {nav}
           <MarketView
-            toggleNav={toggleNav}
-            onClickAddAccount={onClickAddAccount}
-            showVisibleAssetsModal={showVisibleAssetsModal}
-            onShowVisibleAssetsModal={onShowVisibleAssetsModal}
+            // toggleNav={toggleNav}
+            // onClickAddAccount={() => {}}
+            // showVisibleAssetsModal={showVisibleAssetsModal}
+            // onShowVisibleAssetsModal={onShowVisibleAssetsModal}
+          />
+        </Route>
+
+        <Route path={WalletRoutes.MarketSub} exact={true}>
+          {nav}
+          <PortfolioAsset
+            isShowingMarketData={true}
           />
         </Route>
 

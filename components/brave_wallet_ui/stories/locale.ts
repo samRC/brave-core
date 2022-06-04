@@ -511,5 +511,6 @@ provideStrings({
   braveWalletInformation: 'Information',
   braveWalletRankStat: 'Rank',
   braveWalletVolumeStat: '24h Volume',
-  braveWalletMarketCapStat: 'Market Cap'
+  braveWalletMarketCapStat: 'Market Cap',
+  braveWalletMarketDataCoinNotSupported: 'This asset is not supported by brave wallet'
 })

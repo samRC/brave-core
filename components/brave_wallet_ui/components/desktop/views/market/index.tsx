@@ -5,16 +5,15 @@
 
 import * as React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { useParams } from 'react-router-dom'
 import { useHistory } from 'react-router'
 
 // Constants
 import {
-  AddAccountNavTypes,
   AssetFilterOption,
   BraveWallet,
-  MarketDataTableColumnTypes, PageState,
-  SortOrder, WalletRoutes,
+  MarketDataTableColumnTypes,
+  SortOrder,
+  WalletRoutes,
   WalletState
 } from '../../../../constants/types'
 
@@ -27,7 +26,7 @@ import { marketDataTableHeaders } from '../../../../options/market-data-headers'
 
 // Components
 import { SearchBar } from '../../../shared'
-import { AssetsFilterDropdown, PortfolioView } from '../..'
+import { AssetsFilterDropdown } from '../..'
 import { MarketDataTable } from '../../../market-datatable'
 
 // Styled Components
@@ -43,26 +42,13 @@ import { useSwap } from '../../../../common/hooks'
 
 // Utils
 import { searchCoinMarkets, sortCoinMarkets, filterCoinMarkets } from '../../../../utils/coin-market-utils'
-import { makeNetworkAsset } from '../../../../options/asset-options'
 import { WalletPageActions } from '../../../../page/actions'
 
 const defaultCurrency = 'usd'
 const assetsRequestLimit = 250
 const displayCount = 10
 
-interface ParamsType {
-  id?: string
-}
-
-interface Props {
-  toggleNav: () => void
-  onClickAddAccount: (tabId: AddAccountNavTypes) => () => void
-  onShowVisibleAssetsModal: (showModal: boolean) => void
-  showVisibleAssetsModal: boolean
-}
-
-export const MarketView = (props: Props) => {
-  const { toggleNav, onClickAddAccount, onShowVisibleAssetsModal, showVisibleAssetsModal } = props
+export const MarketView = () => {
   // State
   const [tableHeaders, setTableHeaders] = React.useState(marketDataTableHeaders)
   const [currentFilter, setCurrentFilter] = React.useState<AssetFilterOption>('all')
@@ -70,23 +56,13 @@ export const MarketView = (props: Props) => {
   const [sortByColumnId, setSortByColumnId] = React.useState<MarketDataTableColumnTypes>('marketCap')
   const [searchTerm, setSearchTerm] = React.useState('')
   const [coinsDisplayCount, setCoinsDisplayCount] = React.useState(displayCount)
-  const [selectedCoinMarket, setSelectedCoinMarket] = React.useState<BraveWallet.CoinMarket>()
-  const [isSupportedInBraveWallet, setIsSupportedInBraveWallet] = React.useState<boolean>(false)
-  const { id } = useParams<ParamsType>()
 
   // Redux
   const dispatch = useDispatch()
   const {
     isLoadingCoinMarketData,
-    coinMarketData: allCoins,
-    selectedNetwork,
-    fullTokenList
+    coinMarketData: allCoins
   } = useSelector(({ wallet }: { wallet: WalletState }) => wallet)
-
-  const {
-    selectedTimeline,
-    selectedAsset
-  } = useSelector(({ page }: { page: PageState }) => page)
 
   // Hooks
   const history = useHistory()
@@ -136,29 +112,8 @@ export const MarketView = (props: Props) => {
   }, [])
 
   const onSelectCoinMarket = (coinMarket: BraveWallet.CoinMarket) => {
-    const nativeAsset = makeNetworkAsset(selectedNetwork)
-    const supportedAsset = [...fullTokenList, nativeAsset].find(a => a.symbol.toLowerCase() === coinMarket.symbol.toLowerCase())
-    if (supportedAsset) {
-      dispatch(WalletPageActions.selectAsset({ asset: supportedAsset, timeFrame: selectedTimeline }))
-      setIsSupportedInBraveWallet(true)
-    } else {
-      const asset = new BraveWallet.BlockchainToken()
-      asset.coingeckoId = coinMarket.id
-      asset.name = coinMarket.name
-      asset.contractAddress = ''
-      asset.symbol = coinMarket.symbol.toUpperCase()
-      asset.logo = coinMarket.image
-      dispatch(WalletPageActions.selectAsset({ asset, timeFrame: selectedTimeline }))
-      setIsSupportedInBraveWallet(false)
-    }
-
-    setSelectedCoinMarket(coinMarket)
+    dispatch(WalletPageActions.selectCoinMarket(coinMarket))
     history.push(`${WalletRoutes.Market}/${coinMarket.symbol}`)
-  }
-
-  const onGoBack = () => {
-    setSelectedCoinMarket(undefined)
-    history.push(WalletRoutes.Market)
   }
 
   React.useEffect(() => {
@@ -172,48 +127,34 @@ export const MarketView = (props: Props) => {
 
   return (
     <StyledWrapper>
-      {id && selectedAsset && selectedCoinMarket
-        ? <PortfolioView
-            toggleNav={toggleNav}
-            onClickAddAccount={onClickAddAccount}
-            onShowVisibleAssetsModal={onShowVisibleAssetsModal}
-            showVisibleAssetsModal={showVisibleAssetsModal}
-            isSupportedInBraveWallet={isSupportedInBraveWallet}
-            hideNetworkDescription={true}
-            onGoBack={onGoBack}
-            selectedCoinMarket={selectedCoinMarket}
-          />
-        : <>
-            <TopRow>
-              <AssetsFilterDropdown
-                options={AssetFilterOptions}
-                value={currentFilter}
-                onSelectFilter={onSelectFilter}
-              />
-              <SearchBar
-                placeholder="Search"
-                autoFocus={true}
-                action={event => {
-                  setSearchTerm(event.target.value)
-                }}
-                disabled={isLoadingCoinMarketData}
-              />
-            </TopRow>
-            {isLoadingCoinMarketData
-              ? <LoadIconWrapper>
-                <LoadIcon />
-              </LoadIconWrapper>
-              : <MarketDataTable
-                headers={tableHeaders}
-                coinMarketData={visibleCoinMarkets}
-                moreDataAvailable={visibleCoinMarkets.length > 0}
-                showEmptyState={searchTerm !== '' || currentFilter !== 'all'}
-                onShowMoreCoins={onShowMoreCoins}
-                onSort={onSort}
-                onSelectCoinMarket={onSelectCoinMarket}
-              />
-            }
-          </>
+      <TopRow>
+        <AssetsFilterDropdown
+          options={AssetFilterOptions}
+          value={currentFilter}
+          onSelectFilter={onSelectFilter}
+        />
+        <SearchBar
+          placeholder="Search"
+          autoFocus={true}
+          action={event => {
+            setSearchTerm(event.target.value)
+          }}
+          disabled={isLoadingCoinMarketData}
+        />
+      </TopRow>
+      {isLoadingCoinMarketData
+        ? <LoadIconWrapper>
+          <LoadIcon />
+        </LoadIconWrapper>
+        : <MarketDataTable
+          headers={tableHeaders}
+          coinMarketData={visibleCoinMarkets}
+          moreDataAvailable={visibleCoinMarkets.length > 0}
+          showEmptyState={searchTerm !== '' || currentFilter !== 'all'}
+          onShowMoreCoins={onShowMoreCoins}
+          onSort={onSort}
+          onSelectCoinMarket={onSelectCoinMarket}
+        />
       }
     </StyledWrapper>
   )

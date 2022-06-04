@@ -29,6 +29,7 @@ export const StatValue = styled.div`
   letter-spacing: 0.01em;
   color: ${p => p.theme.color.text01};
   margin-bottom: 12px;
+  justify-content: center;
 `
 
 export const StatLabel = styled.div`
@@ -42,6 +43,7 @@ export const StatLabel = styled.div`
  line-height: 20px;
  letter-spacing: 0.01em;
  color: ${p => p.theme.color.text02};
+ justify-content: center;
 `
 
 export const Row = styled.div`
