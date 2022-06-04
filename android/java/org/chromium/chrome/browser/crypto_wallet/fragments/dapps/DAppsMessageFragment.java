@@ -6,6 +6,7 @@
 package org.chromium.chrome.browser.crypto_wallet.fragments.dapps;
 
 import android.os.Bundle;
+import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 import org.chromium.brave_wallet.mojom.SignMessageRequest;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.crypto_wallet.util.Utils;
 
 public class DAppsMessageFragment extends BaseDAppsFragment {
     private SignMessageRequest mCurrentSignMessageRequest;

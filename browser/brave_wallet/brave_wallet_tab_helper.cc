@@ -9,14 +9,14 @@
 #include <utility>
 #include <vector>
 
-#include "brave/common/webui_url_constants.h"
 #include "brave/components/brave_wallet/browser/permission_utils.h"
+#include "brave/components/constants/webui_url_constants.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/request_type.h"
 #include "content/public/browser/web_contents.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
 #include "brave/browser/ui/brave_wallet/wallet_bubble_manager_delegate.h"
 #endif
 
@@ -26,13 +26,13 @@ BraveWalletTabHelper::BraveWalletTabHelper(content::WebContents* web_contents)
     : content::WebContentsUserData<BraveWalletTabHelper>(*web_contents) {}
 
 BraveWalletTabHelper::~BraveWalletTabHelper() {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
   if (IsShowingBubble())
     CloseBubble();
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
 void BraveWalletTabHelper::SetCloseOnDeactivate(bool close) {
   if (wallet_bubble_manager_delegate_)
     wallet_bubble_manager_delegate_->CloseOnDeactivate(close);
@@ -139,7 +139,7 @@ GURL BraveWalletTabHelper::GetApproveBubbleURL() {
   return webui_url.ReplaceComponents(replacements);
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(BraveWalletTabHelper);
 

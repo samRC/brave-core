@@ -17,7 +17,6 @@
 #include "brave/browser/brave_wallet/tx_service_factory.h"
 #include "brave/browser/ui/webui/brave_wallet/wallet_common_ui.h"
 #include "brave/browser/ui/webui/navigation_bar_data_provider.h"
-#include "brave/common/webui_url_constants.h"
 #include "brave/components/brave_wallet/browser/asset_ratio_service.h"
 #include "brave/components/brave_wallet/browser/blockchain_registry.h"
 #include "brave/components/brave_wallet/browser/brave_wallet_constants.h"
@@ -27,6 +26,7 @@
 #include "brave/components/brave_wallet/browser/swap_service.h"
 #include "brave/components/brave_wallet/browser/tx_service.h"
 #include "brave/components/brave_wallet_page/resources/grit/brave_wallet_page_generated_map.h"
+#include "brave/components/constants/webui_url_constants.h"
 #include "brave/components/l10n/common/locale_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
@@ -96,6 +96,8 @@ void WalletPageUI::CreatePageHandler(
         eth_tx_manager_proxy_receiver,
     mojo::PendingReceiver<brave_wallet::mojom::SolanaTxManagerProxy>
         solana_tx_manager_proxy_receiver,
+    mojo::PendingReceiver<brave_wallet::mojom::FilTxManagerProxy>
+        filecoin_tx_manager_proxy_receiver,
     mojo::PendingReceiver<brave_wallet::mojom::BraveWalletService>
         brave_wallet_service_receiver) {
   DCHECK(page);
@@ -121,6 +123,8 @@ void WalletPageUI::CreatePageHandler(
       profile, std::move(eth_tx_manager_proxy_receiver));
   brave_wallet::TxServiceFactory::BindSolanaTxManagerProxyForContext(
       profile, std::move(solana_tx_manager_proxy_receiver));
+  brave_wallet::TxServiceFactory::BindFilTxManagerProxyForContext(
+      profile, std::move(filecoin_tx_manager_proxy_receiver));
   brave_wallet::BraveWalletServiceFactory::BindForContext(
       profile, std::move(brave_wallet_service_receiver));
 

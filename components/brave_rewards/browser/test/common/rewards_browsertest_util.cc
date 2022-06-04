@@ -14,8 +14,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "bat/ledger/mojom_structs.h"
-#include "brave/common/brave_paths.h"
 #include "brave/components/brave_rewards/common/pref_names.h"
+#include "brave/components/constants/brave_paths.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
@@ -107,6 +107,11 @@ void WaitForLedgerStop(brave_rewards::RewardsServiceImpl* rewards_service) {
 
 void CreateWallet(brave_rewards::RewardsServiceImpl* rewards_service) {
   DCHECK(rewards_service);
+
+  // Ensure that the utility process is started before attempting to create a
+  // rewards payment ID.
+  StartProcess(rewards_service);
+
   base::RunLoop run_loop;
   bool success = false;
   rewards_service->CreateWallet(

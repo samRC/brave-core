@@ -11,9 +11,10 @@
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "bat/ads/internal/ads_client_helper.h"
-#include "bat/ads/internal/base/database_statement_util.h"
+#include "bat/ads/internal/base/database_bind_util.h"
+#include "bat/ads/internal/base/database_column_util.h"
 #include "bat/ads/internal/base/database_table_util.h"
-#include "bat/ads/internal/base/database_util.h"
+#include "bat/ads/internal/base/database_transaction_util.h"
 #include "bat/ads/internal/base/logging_util.h"
 
 namespace ads {
@@ -31,7 +32,7 @@ int BindParameters(mojom::DBCommand* command, const AdEventList& ad_events) {
 
   int index = 0;
   for (const auto& ad_event : ad_events) {
-    BindString(command, index++, ad_event.uuid);
+    BindString(command, index++, ad_event.placement_id);
     BindString(command, index++, ad_event.type.ToString());
     BindString(command, index++, ad_event.confirmation_type.ToString());
     BindString(command, index++, ad_event.campaign_id);
@@ -51,7 +52,7 @@ AdEventInfo GetFromRecord(mojom::DBRecord* record) {
 
   AdEventInfo ad_event;
 
-  ad_event.uuid = ColumnString(record, 0);
+  ad_event.placement_id = ColumnString(record, 0);
   ad_event.type = AdType(ColumnString(record, 1));
   ad_event.confirmation_type = ConfirmationType(ColumnString(record, 2));
   ad_event.campaign_id = ColumnString(record, 3);
@@ -300,7 +301,7 @@ void AdEvents::OnGetAdEvents(mojom::DBCommandResponsePtr response,
 void AdEvents::MigrateToV5(mojom::DBTransaction* transaction) {
   DCHECK(transaction);
 
-  util::Drop(transaction, "ad_events");
+  DropTable(transaction, "ad_events");
 
   const std::string& query = base::StringPrintf(
       "CREATE TABLE ad_events "
@@ -324,7 +325,7 @@ void AdEvents::MigrateToV5(mojom::DBTransaction* transaction) {
 void AdEvents::MigrateToV13(mojom::DBTransaction* transaction) {
   DCHECK(transaction);
 
-  util::Rename(transaction, "ad_events", "ad_events_temp");
+  RenameTable(transaction, "ad_events", "ad_events_temp");
 
   const std::string& query = base::StringPrintf(
       "CREATE TABLE ad_events "
@@ -362,13 +363,13 @@ void AdEvents::MigrateToV13(mojom::DBTransaction* transaction) {
 
   transaction->commands.push_back(std::move(command));
 
-  util::Drop(transaction, "ad_events_temp");
+  DropTable(transaction, "ad_events_temp");
 }
 
 void AdEvents::MigrateToV17(mojom::DBTransaction* transaction) {
   DCHECK(transaction);
 
-  util::CreateIndex(transaction, "ad_events", "timestamp");
+  CreateTableIndex(transaction, "ad_events", "timestamp");
 }
 
 }  // namespace table

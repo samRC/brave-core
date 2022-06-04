@@ -23,7 +23,6 @@
 #include "brave/browser/brave_ads/ads_service_factory.h"
 #include "brave/browser/brave_rewards/rewards_service_factory.h"
 #include "brave/browser/ui/webui/brave_webui_source.h"
-#include "brave/common/webui_url_constants.h"
 #include "brave/components/brave_ads/browser/ads_service.h"
 #include "brave/components/brave_rewards/browser/rewards_notification_service.h"
 #include "brave/components/brave_rewards/browser/rewards_notification_service_observer.h"
@@ -32,6 +31,7 @@
 #include "brave/components/brave_rewards/common/pref_names.h"
 #include "brave/components/brave_rewards/resources/grit/brave_rewards_page_generated_map.h"
 #include "brave/components/brave_rewards/resources/grit/brave_rewards_resources.h"
+#include "brave/components/constants/webui_url_constants.h"
 #include "brave/components/l10n/browser/locale_helper.h"
 #include "brave/components/l10n/common/locale_util.h"
 #include "build/build_config.h"
@@ -287,6 +287,7 @@ class RewardsDOMHandler
 
   // AdsServiceObserver implementation
   void OnAdRewardsChanged() override;
+  void OnNeedsBrowserUpdateToSeeAds() override;
 
   void InitPrefChangeRegistrar();
   void OnPrefChanged(const std::string& key);
@@ -315,6 +316,7 @@ const char kShouldAllowAdsSubdivisionTargeting[] =
 const char kAdsSubdivisionTargeting[] = "adsSubdivisionTargeting";
 const char kAutoDetectedAdsSubdivisionTargeting[] =
     "automaticallyDetectedAdsSubdivisionTargeting";
+const char kNeedsBrowserUpdateToSeeAds[] = "needsBrowserUpdateToSeeAds";
 
 }  // namespace
 
@@ -1249,6 +1251,9 @@ void RewardsDOMHandler::GetAdsData(const base::Value::List& args) {
 
   ads_data.SetBoolean("adsUIEnabled", true);
 
+  ads_data.SetBoolean(kNeedsBrowserUpdateToSeeAds,
+                      ads_service_->NeedsBrowserUpdateToSeeAds());
+
   CallJavascriptFunction("brave_rewards.adsData", ads_data);
 }
 
@@ -1565,6 +1570,10 @@ void RewardsDOMHandler::OnStatementChanged(
 void RewardsDOMHandler::OnAdRewardsChanged() {
   ads_service_->GetStatementOfAccounts(base::BindOnce(
       &RewardsDOMHandler::OnGetStatement, weak_factory_.GetWeakPtr()));
+}
+
+void RewardsDOMHandler::OnNeedsBrowserUpdateToSeeAds() {
+  GetAdsData(base::Value::List());
 }
 
 void RewardsDOMHandler::OnRecurringTipSaved(

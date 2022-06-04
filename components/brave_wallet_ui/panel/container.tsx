@@ -66,7 +66,7 @@ import LockPanel from '../components/extension/lock-panel'
 import { getNetworkInfo } from '../utils/network-utils'
 import { isHardwareAccount } from '../utils/address-utils'
 import { useAssets, useSwap, useSend, useHasAccount, usePrevNetwork } from '../common/hooks'
-import { getUniqueAssets } from '../utils/asset-utils'
+import { getRampAssetSymbol, getUniqueAssets } from '../utils/asset-utils'
 import { getBuyAssetUrl } from '../common/async/lib'
 
 type Props = {
@@ -108,7 +108,8 @@ function Container (props: Props) {
     defaultCurrencies,
     transactions,
     userVisibleTokensInfo,
-    defaultAccounts
+    defaultAccounts,
+    defaultNetworks
   } = props.wallet
 
   const {
@@ -163,9 +164,12 @@ function Container (props: Props) {
   const { prevNetwork } = usePrevNetwork()
 
   React.useEffect(() => {
-    if (selectedPanel === 'connectWithSite') {
+    // Checking selectedAccounts length here to ensure that
+    // we only update this once on mount.
+    if (selectedPanel === 'connectWithSite' && selectedAccounts.length === 0) {
       const foundDefaultAccountInfo = defaultAccounts.find(account => connectingAccounts.includes(account.address.toLowerCase()))
       const foundDefaultAccount = accounts.find((account) => account.address.toLowerCase() === foundDefaultAccountInfo?.address?.toLowerCase() ?? '')
+
       if (foundDefaultAccount) {
         setSelectedAccounts([foundDefaultAccount])
       }
@@ -184,8 +188,11 @@ function Container (props: Props) {
   }
 
   const onSubmitBuy = () => {
+    const asset = selectedBuyOption === BraveWallet.OnRampProvider.kRamp
+      ? { ...selectedBuyAsset, symbol: getRampAssetSymbol(selectedBuyAsset) }
+      : selectedBuyAsset
     getBuyAssetUrl({
-      asset: selectedBuyAsset,
+      asset,
       onRampProvider: selectedBuyOption,
       chainId: selectedNetwork.chainId,
       address: selectedAccount.address,
@@ -270,21 +277,22 @@ function Container (props: Props) {
     props.walletActions.unlockWallet({ password: inputValue })
     setInputValue('')
   }
-  const onLockWallet = () => {
-    props.walletActions.lockWallet()
-  }
+
   const handlePasswordChanged = (value: string) => {
     setInputValue(value)
     if (hasIncorrectPassword) {
       props.walletActions.hasIncorrectPassword(false)
     }
   }
+
   const onRestore = () => {
     props.walletPanelActions.expandRestoreWallet()
   }
+
   const onSetup = () => {
     props.walletPanelActions.setupWallet()
   }
+
   const addToFavorites = (app: BraveWallet.AppItem) => {
     props.walletActions.addFavoriteApp(app)
   }
@@ -624,7 +632,9 @@ function Container (props: Props) {
             onApproveChangeNetwork={onApproveChangeNetwork}
             onCancel={onCancelChangeNetwork}
             onLearnMore={onNetworkLearnMore}
-            networkPayload={getNetworkInfo(switchChainRequest.chainId, networkList)}
+            // Passed BraveWallet.CoinType.ETH here since AllowAddChangeNetworkPanel
+            // is only used for EVM networks and switchChainRequest doesn't return cointType.
+            networkPayload={getNetworkInfo(switchChainRequest.chainId, BraveWallet.CoinType.ETH, networkList)}
             panelType='change'
           />
         </LongWrapper>
@@ -641,7 +651,8 @@ function Container (props: Props) {
             accounts={accounts}
             onCancel={onCancelSigning}
             onSign={onSignData}
-            selectedNetwork={getNetworkInfo(selectedNetwork.chainId, networkList)}
+            selectedNetwork={getNetworkInfo(selectedNetwork.chainId, selectedNetwork.coin, networkList)}
+            defaultNetworks={defaultNetworks}
             // Pass a boolean here if the signing method is risky
             showWarning={false}
           />
@@ -821,7 +832,7 @@ function Container (props: Props) {
                 onSubmit={onSubmitBuy}
                 selectedAsset={selectedBuyAsset}
                 buyAmount={buyAmount}
-                selectedNetwork={getNetworkInfo(selectedNetwork.chainId, networkList)}
+                selectedNetwork={getNetworkInfo(selectedNetwork.chainId, selectedNetwork.coin, networkList)}
                 networkList={networkList}
                 selectedBuyOption={selectedBuyOption}
                 onSelectBuyOption={setSelectedBuyOption}
@@ -973,10 +984,9 @@ function Container (props: Props) {
         defaultCurrencies={defaultCurrencies}
         spotPrices={transactionSpotPrices}
         selectedAccount={selectedAccount}
-        selectedNetwork={getNetworkInfo(selectedNetwork.chainId, networkList)}
+        selectedNetwork={getNetworkInfo(selectedNetwork.chainId, selectedNetwork.coin, networkList)}
         isConnected={isConnectedToSite}
         navAction={navigateTo}
-        onLockWallet={onLockWallet}
         onOpenSettings={onOpenSettings}
         originInfo={activeOrigin}
         isSwapSupported={isSwapSupported}

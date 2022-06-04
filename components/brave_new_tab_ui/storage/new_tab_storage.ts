@@ -70,9 +70,11 @@ export const defaultState: NewTab.State = {
       total: 0,
       wallets: {}
     },
+    externalWallet: undefined,
     dismissedNotifications: [],
     rewardsEnabled: false,
     enabledAds: false,
+    needsBrowserUpdateToSeeAds: false,
     adsSupported: false,
     promotions: [],
     totalContribution: 0.0,

@@ -1,5 +1,6 @@
 import { EthereumSignedTx } from 'trezor-connect/lib/typescript'
 import { BraveWallet } from '../../constants/types'
+import { SignedLotusMessage } from '@glif/filecoin-message'
 
 export const FilecoinNetworkTypes = [
   BraveWallet.FILECOIN_MAINNET, BraveWallet.FILECOIN_TESTNET
@@ -30,7 +31,7 @@ export type HardwareOperationResult = {
 }
 
 export type SignHardwareTransactionOperationResult = HardwareOperationResult & {
-  payload?: EthereumSignedTx
+  payload?: EthereumSignedTx | SignedLotusMessage
 }
 
 export type SignHardwareMessageOperationResult = HardwareOperationResult & {
@@ -60,10 +61,5 @@ export type GetAccountsHardwareOperationResult = HardwareOperationResult & {
   payload?: BraveWallet.HardwareWalletAccount[]
 }
 
-// Did not create a string for these yet since it is
-// likely these names will be returned from another service
-// that will be localized.
-export const FilecoinNetworkLocaleMapping = {
-  [BraveWallet.FILECOIN_MAINNET]: 'Filecoin Mainnet',
-  [BraveWallet.FILECOIN_TESTNET]: 'Filecoin Testnet'
-}
+// Batch size of accounts imported from the device in one step.
+export const DerivationBatchSize = 4

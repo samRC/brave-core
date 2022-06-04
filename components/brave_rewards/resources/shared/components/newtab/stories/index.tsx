@@ -31,6 +31,7 @@ export function Card () {
   const nextPaymentDate = Date.now() + 1000 * 60 * 60 * 24 * daysUntilPayment
   const showGrant = knobs.boolean('Grant Available', false)
   const earningsReceived = knobs.boolean('Earnings received', false)
+  const disconnectedWallet = knobs.boolean('Disconnected', false)
 
   return (
     <LocaleContext.Provider value={localeContext}>
@@ -40,6 +41,7 @@ export function Card () {
             rewardsEnabled={true}
             adsEnabled={true}
             adsSupported={true}
+            needsBrowserUpdateToSeeAds={false}
             rewardsBalance={91.5812}
             exchangeCurrency='USD'
             exchangeRate={0.82}
@@ -50,6 +52,14 @@ export function Card () {
               createdAt: Date.now(),
               claimableUntil: Date.now() + 1000 * 10 * 24 * 60 * 60,
               expiresAt: Date.now() + 1000 * 10 * 24 * 60 * 60
+            } : null}
+            externalWallet={disconnectedWallet ? {
+              provider: 'uphold',
+              status: 'disconnected',
+              username: '',
+              links: {
+                reconnect: 'https://brave.com'
+              }
             } : null}
             nextPaymentDate={nextPaymentDate}
             earningsThisMonth={0.142}

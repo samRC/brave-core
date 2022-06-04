@@ -7,22 +7,21 @@
 #define BRAVE_VENDOR_BAT_NATIVE_ADS_SRC_BAT_ADS_INTERNAL_AD_EVENTS_AD_EVENT_UTIL_H_
 
 #include "bat/ads/internal/ad_events/ad_event_info_aliases.h"
-
-namespace absl {
-template <typename T>
-class optional;
-}  // namespace absl
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Time;
-}
+}  // namespace base
 
 namespace ads {
 
+class ConfirmationType;
 struct AdInfo;
 struct CreativeAdInfo;
 
-bool HasFiredAdViewedEvent(const AdInfo& ad, const AdEventList& ad_events);
+bool HasFiredAdEvent(const AdInfo& ad,
+                     const AdEventList& ad_events,
+                     const ConfirmationType& confirmation_type);
 
 absl::optional<base::Time> GetLastSeenAdTime(const AdEventList& ad_events,
                                              const CreativeAdInfo& creative_ad);

@@ -87,7 +87,8 @@ const rewardsReducer: Reducer<NewTab.State | undefined> = (state: NewTab.State, 
           ...state.rewardsState,
           rewardsEnabled: preInitialRewardsDataPayload.rewardsEnabled,
           enabledAds: preInitialRewardsDataPayload.enabledAds,
-          adsSupported: preInitialRewardsDataPayload.adsSupported
+          adsSupported: preInitialRewardsDataPayload.adsSupported,
+          needsBrowserUpdateToSeeAds: preInitialRewardsDataPayload.needsBrowserUpdateToSeeAds
         }
       }
       break
@@ -96,6 +97,7 @@ const rewardsReducer: Reducer<NewTab.State | undefined> = (state: NewTab.State, 
       const initialRewardsDataPayload = payload as InitialRewardsData
       const newRewardsState = {
         balance: initialRewardsDataPayload.balance,
+        externalWallet: initialRewardsDataPayload.externalWallet,
         report: initialRewardsDataPayload.report,
         totalContribution: getTotalContributions(initialRewardsDataPayload.report),
         parameters: initialRewardsDataPayload.parameters

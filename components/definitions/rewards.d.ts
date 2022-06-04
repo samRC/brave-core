@@ -83,10 +83,7 @@ declare namespace Rewards {
         | 'regionNotSupportedModal'
         | 'show'
         | 'upholdBATNotAllowedModal'
-        | 'upholdBlockedUserModal'
-        | 'upholdCustomerDueDiligenceRequiredModal'
-        | 'upholdPendingUserModal'
-        | 'upholdRestrictedUserModal'
+        | 'upholdInsufficientCapabilitiesModal'
         | 'walletOwnershipVerificationFailureModal'
       paymentIdCheck: boolean
       promosDismissed?: {
@@ -251,6 +248,7 @@ declare namespace Rewards {
     shouldAllowAdsSubdivisionTargeting: boolean
     adsUIEnabled: boolean
     adsIsSupported: boolean
+    needsBrowserUpdateToSeeAds: boolean
     adsNextPaymentDate: number
     adsReceivedThisMonth: number
     adsEarningsThisMonth: number

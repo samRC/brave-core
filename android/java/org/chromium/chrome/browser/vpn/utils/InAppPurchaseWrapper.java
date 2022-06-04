@@ -25,8 +25,9 @@ import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 
-import org.chromium.base.Log;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.BraveFeatureList;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.vpn.utils.BraveVpnPrefUtils;
 import org.chromium.chrome.browser.vpn.utils.BraveVpnUtils;
 import org.chromium.ui.widget.Toast;
@@ -40,6 +41,9 @@ import java.util.Map;
 public class InAppPurchaseWrapper {
     public static final String NIGHTLY_MONTHLY_SUBSCRIPTION = "nightly.bravevpn.monthly";
     public static final String NIGHTLY_YEARLY_SUBSCRIPTION = "nightly.bravevpn.yearly";
+
+    public static final String RELEASE_MONTHLY_SUBSCRIPTION = "brave.vpn.monthly";
+    public static final String RELEASE_YEARLY_SUBSCRIPTION = "brave.vpn.yearly";
     private BillingClient mBillingClient;
 
     private final Map<String, SkuDetails> mSkusWithSkuDetails = new HashMap<>();
@@ -48,8 +52,11 @@ public class InAppPurchaseWrapper {
         return mSkusWithSkuDetails.get(sku);
     }
 
-    public static final List<String> SUBS_SKUS = new ArrayList<>(
+    public static final List<String> NIGHTLY_SUBS_SKUS = new ArrayList<>(
             Arrays.asList(NIGHTLY_MONTHLY_SUBSCRIPTION, NIGHTLY_YEARLY_SUBSCRIPTION));
+
+    public static final List<String> RELEASE_SUBS_SKUS = new ArrayList<>(
+            Arrays.asList(RELEASE_MONTHLY_SUBSCRIPTION, RELEASE_YEARLY_SUBSCRIPTION));
 
     private static volatile InAppPurchaseWrapper sInAppPurchaseWrapper;
     private static Object mutex = new Object();
@@ -82,8 +89,14 @@ public class InAppPurchaseWrapper {
         }
     }
 
-    public BillingClient getBillingClient() {
-        return mBillingClient;
+    public boolean isSubscriptionSupported() {
+        if (mBillingClient != null) {
+            BillingResult result =
+                    mBillingClient.isFeatureSupported(BillingClient.FeatureType.SUBSCRIPTIONS);
+            return (result.getResponseCode() == BillingClient.BillingResponseCode.OK
+                    && ChromeFeatureList.isEnabled(BraveFeatureList.BRAVE_REWARDS));
+        }
+        return false;
     }
 
     private void querySkuDetailsAsync(List<String> skuList) {
@@ -184,7 +197,8 @@ public class InAppPurchaseWrapper {
         @Override
         public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
             if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                querySkuDetailsAsync(SUBS_SKUS);
+                querySkuDetailsAsync(NIGHTLY_SUBS_SKUS);
+                querySkuDetailsAsync(RELEASE_SUBS_SKUS);
             }
         }
     };

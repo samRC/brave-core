@@ -6,7 +6,6 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "brave/browser/brave_rewards/rewards_service_factory.h"
-#include "brave/common/brave_paths.h"
 #include "brave/components/brave_rewards/browser/rewards_notification_service.h"
 #include "brave/components/brave_rewards/browser/rewards_notification_service_observer.h"
 #include "brave/components/brave_rewards/browser/rewards_service_impl.h"
@@ -16,6 +15,7 @@
 #include "brave/components/brave_rewards/browser/test/common/rewards_browsertest_promotion.h"
 #include "brave/components/brave_rewards/browser/test/common/rewards_browsertest_response.h"
 #include "brave/components/brave_rewards/browser/test/common/rewards_browsertest_util.h"
+#include "brave/components/constants/brave_paths.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     RewardsNotificationBrowserTest,
     InsufficientNotificationForZeroAmountZeroPublishers) {
-  rewards_browsertest_util::StartProcess(rewards_service_);
+  rewards_browsertest_util::CreateWallet(rewards_service_);
   CheckInsufficientFundsForTesting();
   WaitForInsufficientFundsNotification();
   const auto& notifications = rewards_service_->GetAllNotifications();
@@ -330,9 +330,9 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     RewardsNotificationBrowserTest,
     InsufficientNotificationForACNotEnoughFunds) {
-  rewards_browsertest_util::StartProcess(rewards_service_);
+  rewards_browsertest_util::CreateWallet(rewards_service_);
   rewards_service_->SetAutoContributeEnabled(true);
-  context_helper_->LoadURL(rewards_browsertest_util::GetRewardsUrl());
+  context_helper_->LoadRewardsPage();
   // Visit publishers
   const bool verified = true;
   context_helper_->VisitPublisher(
@@ -358,12 +358,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(is_showing_notification);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    RewardsNotificationBrowserTest,
-    InsufficientNotificationForInsufficientAmount) {
-  rewards_browsertest_util::StartProcess(rewards_service_);
+IN_PROC_BROWSER_TEST_F(RewardsNotificationBrowserTest,
+                       InsufficientNotificationForInsufficientAmount) {
   rewards_browsertest_util::CreateWallet(rewards_service_);
-  context_helper_->LoadURL(rewards_browsertest_util::GetRewardsUrl());
+  context_helper_->LoadRewardsPage();
   contribution_->AddBalance(promotion_->ClaimPromotionViaCode());
 
   contribution_->TipViaCode("duckduckgo.com", 20.0,
@@ -389,12 +387,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(is_showing_notification);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    RewardsNotificationBrowserTest,
-    InsufficientNotificationForVerifiedInsufficientAmount) {
-  rewards_browsertest_util::StartProcess(rewards_service_);
+IN_PROC_BROWSER_TEST_F(RewardsNotificationBrowserTest,
+                       InsufficientNotificationForVerifiedInsufficientAmount) {
   rewards_browsertest_util::CreateWallet(rewards_service_);
-  context_helper_->LoadURL(rewards_browsertest_util::GetRewardsUrl());
+  context_helper_->LoadRewardsPage();
   contribution_->AddBalance(promotion_->ClaimPromotionViaCode());
 
   contribution_->TipViaCode("duckduckgo.com", 50.0,

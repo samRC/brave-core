@@ -113,6 +113,9 @@ async function updateAccountInfo (store: Store) {
 }
 
 async function updateCoinAccountNetworkInfo (store: Store, coin: BraveWallet.CoinType) {
+  if (coin === BraveWallet.CoinType.FIL) {
+    await store.dispatch(refreshKeyringInfo())
+  }
   const { accounts, networkList } = getWalletState(store)
   if (accounts.length === 0) {
     return
@@ -131,7 +134,7 @@ async function updateCoinAccountNetworkInfo (store: Store, coin: BraveWallet.Coi
 
   // Updated Selected Network
   const coinsChainId = await jsonRpcService.getChainId(coin)
-  const defaultNetwork = getNetworkInfo(coinsChainId.chainId, networkList)
+  const defaultNetwork = getNetworkInfo(coinsChainId.chainId, coin, networkList)
   await store.dispatch(WalletActions.setNetwork(defaultNetwork))
 }
 
@@ -250,8 +253,6 @@ handler.on(WalletActions.initialized.getType(), async (store: Store, payload: Wa
     crypto: defualtCrypo.cryptocurrency
   }
   store.dispatch(WalletActions.defaultCurrenciesUpdated(defaultCurrencies))
-  const showTestNetworks = await braveWalletService.getShowWalletTestNetworks()
-  store.dispatch(WalletActions.setShowTestNetworks(showTestNetworks.isEnabled))
   // Fetch Balances and Prices
   if (!state.isWalletLocked && state.isWalletCreated) {
     const currentNetwork = await store.dispatch(refreshNetworkInfo())

@@ -2,7 +2,6 @@ import("//brave/browser/ethereum_remote_client/buildflags/buildflags.gni")
 import("//brave/build/config.gni")
 import("//brave/components/brave_vpn/buildflags/buildflags.gni")
 import("//brave/components/brave_wayback_machine/buildflags/buildflags.gni")
-import("//brave/components/decentralized_dns/buildflags/buildflags.gni")
 import("//brave/components/ftx/browser/buildflags/buildflags.gni")
 import("//brave/components/ipfs/buildflags/buildflags.gni")
 import("//brave/components/ntp_background_images/buildflags/buildflags.gni")
@@ -37,6 +36,7 @@ source_set("favicon_source") {
 source_set("ui") {
   # Remove when https://github.com/brave/brave-browser/issues/10614 is resolved
   check_includes = false
+  public_deps = []
   sources = [
     "webui/brave_adblock_ui.cc",
     "webui/brave_adblock_ui.h",
@@ -123,6 +123,8 @@ source_set("ui") {
       "webui/new_tab_page/brave_new_tab_ui_utils.h",
       "webui/new_tab_page/top_sites_message_handler.cc",
       "webui/new_tab_page/top_sites_message_handler.h",
+      "webui/settings/brave_adblock_handler.cc",
+      "webui/settings/brave_adblock_handler.h",
       "webui/settings/brave_appearance_handler.cc",
       "webui/settings/brave_appearance_handler.h",
       "webui/settings/brave_import_data_handler.h",
@@ -130,6 +132,8 @@ source_set("ui") {
       "webui/settings/brave_privacy_handler.h",
       "webui/settings/brave_search_engines_handler.cc",
       "webui/settings/brave_search_engines_handler.h",
+      "webui/settings/brave_settings_localized_strings_provider.cc",
+      "webui/settings/brave_settings_localized_strings_provider.h",
       "webui/settings/brave_sync_handler.cc",
       "webui/settings/brave_sync_handler.h",
       "webui/settings/brave_wallet_handler.cc",
@@ -150,6 +154,8 @@ source_set("ui") {
         "webui/settings/brave_relaunch_handler_mac.mm",
       ]
     }
+
+    public_deps += [ "//brave/vendor/bat-native-ads" ]
   }  # !is_android
 
   if (toolkit_views) {
@@ -271,7 +277,6 @@ source_set("ui") {
     "//brave/browser/ui/webui/brave_federated:mojo_bindings",
     "//brave/chromium_src/chrome/browser/ui",
     "//brave/common",
-    "//brave/common:pref_names",
     "//brave/components/brave_adblock_ui:generated_resources",
     "//brave/components/brave_ads/browser",
     "//brave/components/brave_ads/browser",
@@ -285,9 +290,9 @@ source_set("ui") {
     "//brave/components/brave_shields/browser",
     "//brave/components/brave_vpn/buildflags",
     "//brave/components/brave_wayback_machine:buildflags",
+    "//brave/components/constants",
     "//brave/components/cosmetic_filters/resources/data:generated_resources",
     "//brave/components/crypto_dot_com/browser/buildflags:buildflags",
-    "//brave/components/decentralized_dns/buildflags",
     "//brave/components/ftx/browser/buildflags:buildflags",
     "//brave/components/l10n/browser",
     "//brave/components/l10n/common",
@@ -506,10 +511,6 @@ source_set("ui") {
       }
     }
 
-    if (decentralized_dns_enabled) {
-      deps += [ "//brave/components/decentralized_dns" ]
-    }
-
     if (enable_tor) {
       sources += [
         "views/location_bar/onion_location_view.cc",
@@ -529,6 +530,7 @@ source_set("ui") {
       "//brave/browser/resources/extensions:resources",
       "//brave/components/brave_extension:generated_resources",
       "//brave/components/brave_extension:static_resources",
+      "//brave/components/decentralized_dns",
       "//brave/components/resources:static_resources",
       "//brave/components/resources:strings_grit",
       "//chrome/browser/extensions",
@@ -591,7 +593,7 @@ source_set("ui") {
     deps += [ "//brave/components/tor/resources:internals_generated_resources" ]
   }
 
-  if (!is_android && !is_ios) {
+  if (!is_android) {
     sources += [
       "views/permission_bubble/brave_wallet_permission_prompt_impl.cc",
       "views/permission_bubble/brave_wallet_permission_prompt_impl.h",
@@ -628,7 +630,7 @@ source_set("ui") {
     ]
   }
 
-  if (ethereum_remote_client_enabled && !is_android && !is_ios) {
+  if (ethereum_remote_client_enabled && !is_android) {
     sources += [
       "webui/ethereum_remote_client/ethereum_remote_client_ui.cc",
       "webui/ethereum_remote_client/ethereum_remote_client_ui.h",
@@ -665,7 +667,7 @@ source_set("browser_tests") {
 
     deps = [
       "//brave/browser/ui",
-      "//brave/common:pref_names",
+      "//brave/components/constants",
       "//chrome/browser",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",

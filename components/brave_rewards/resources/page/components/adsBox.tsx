@@ -18,6 +18,7 @@ import {
   Tokens
 } from '../../ui/components'
 import { Grid, Column, Select, ControlWrapper } from 'brave-ui/components'
+import { AlertCircleIcon } from 'brave-ui/components/icons'
 
 import { PaymentStatusView } from '../../shared/components/payment_status_view'
 
@@ -63,6 +64,24 @@ class AdsBox extends React.Component<Props, State> {
         {getLocale('adsDisabledTextOne')} <br />
         {getLocale('adsDisabledTextTwo')}
       </DisabledContent>
+    )
+  }
+
+  needsBrowserUpdateView = () => {
+    return (
+      <style.NeedsBrowserUpdateView>
+        <style.NeedsBrowserUpdateIcon>
+          <AlertCircleIcon />
+        </style.NeedsBrowserUpdateIcon>
+        <style.NeedsBrowserUpdateContent>
+          <style.NeedsBrowserUpdateContentHeader>
+            {getLocale('rewardsBrowserCannotReceiveAds')}
+          </style.NeedsBrowserUpdateContentHeader>
+          <style.NeedsBrowserUpdateContentBody>
+            {getLocale('rewardsBrowserNeedsUpdateToSeeAds')}
+          </style.NeedsBrowserUpdateContentBody>
+        </style.NeedsBrowserUpdateContent>
+      </style.NeedsBrowserUpdateView>
     )
   }
 
@@ -363,14 +382,19 @@ class AdsBox extends React.Component<Props, State> {
   }
 
   hasSavedEntries = (adHistory: Rewards.AdsHistory[]) => {
-    for (let ix = 0; ix < adHistory.length; ix++) {
-      for (let jx = 0; jx < adHistory[ix].adDetailRows.length; jx++) {
-        if (adHistory[ix].adDetailRows[jx].adContent.savedAd) {
-          return true
-        }
-      }
-    }
-    return false
+    return adHistory.some((adHistoryItem) => {
+      return adHistoryItem.adDetailRows.some((row) => {
+        return row.adContent.savedAd
+      })
+    })
+  }
+
+  hasLikedEntries = (adHistory: Rewards.AdsHistory[]) => {
+    return adHistory.some((adHistoryItem) => {
+      return adHistoryItem.adDetailRows.some((row) => {
+        return row.adContent.likeAction === 1
+      })
+    })
   }
 
   render () {
@@ -385,6 +409,7 @@ class AdsBox extends React.Component<Props, State> {
     let earningsThisMonth = 0
     let earningsLastMonth = 0
     let adEarningsReceived = false
+    let needsBrowserUpdateToSeeAds = false
 
     const {
       adsData,
@@ -402,6 +427,7 @@ class AdsBox extends React.Component<Props, State> {
       adsReceivedThisMonth = adsData.adsReceivedThisMonth || 0
       earningsThisMonth = adsData.adsEarningsThisMonth || 0
       earningsLastMonth = adsData.adsEarningsLastMonth || 0
+      needsBrowserUpdateToSeeAds = adsData.needsBrowserUpdateToSeeAds
     }
 
     if (balanceReport) {
@@ -431,6 +457,11 @@ class AdsBox extends React.Component<Props, State> {
           settingsOpened={this.state.settings}
           onSettingsClick={this.onSettingsToggle}
           attachedAlert={this.adsNotSupportedAlert(adsIsSupported)}
+          headerAlert={
+            (needsBrowserUpdateToSeeAds && !this.state.settings)
+              ? this.needsBrowserUpdateView()
+              : null
+          }
         >
           <style.PaymentStatus>
             <PaymentStatusView
@@ -476,6 +507,7 @@ class AdsBox extends React.Component<Props, State> {
               adsPerHour={adsPerHour}
               rows={rows}
               hasSavedEntries={this.hasSavedEntries(rows)}
+              hasLikedEntries={this.hasLikedEntries(rows)}
               totalDays={30}
           />
           : null

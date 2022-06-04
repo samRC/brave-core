@@ -20,6 +20,10 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "brave/browser/brave_wallet/wallet_notification_helper.h"
+#endif
+
 namespace brave_wallet {
 
 // static
@@ -66,6 +70,19 @@ TxServiceFactory::GetSolanaTxManagerProxyForContext(
 }
 
 // static
+mojo::PendingRemote<mojom::FilTxManagerProxy>
+TxServiceFactory::GetFilTxManagerProxyForContext(
+    content::BrowserContext* context) {
+  if (!IsAllowedForContext(context)) {
+    return mojo::PendingRemote<mojom::FilTxManagerProxy>();
+  }
+
+  return static_cast<TxService*>(
+             GetInstance()->GetServiceForBrowserContext(context, true))
+      ->MakeFilTxManagerProxyRemote();
+}
+
+// static
 TxService* TxServiceFactory::GetServiceForContext(
     content::BrowserContext* context) {
   if (!IsAllowedForContext(context)) {
@@ -105,6 +122,16 @@ void TxServiceFactory::BindSolanaTxManagerProxyForContext(
   }
 }
 
+// static
+void TxServiceFactory::BindFilTxManagerProxyForContext(
+    content::BrowserContext* context,
+    mojo::PendingReceiver<mojom::FilTxManagerProxy> receiver) {
+  auto* tx_service = TxServiceFactory::GetServiceForContext(context);
+  if (tx_service) {
+    tx_service->BindFilTxManagerProxy(std::move(receiver));
+  }
+}
+
 TxServiceFactory::TxServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "TxService",
@@ -118,9 +145,14 @@ TxServiceFactory::~TxServiceFactory() {}
 
 KeyedService* TxServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new TxService(JsonRpcServiceFactory::GetServiceForContext(context),
-                       KeyringServiceFactory::GetServiceForContext(context),
-                       user_prefs::UserPrefs::Get(context));
+  auto* tx_service =
+      new TxService(JsonRpcServiceFactory::GetServiceForContext(context),
+                    KeyringServiceFactory::GetServiceForContext(context),
+                    user_prefs::UserPrefs::Get(context));
+#if !BUILDFLAG(IS_ANDROID)
+  RegisterWalletNotificationService(context, tx_service);
+#endif
+  return tx_service;
 }
 
 content::BrowserContext* TxServiceFactory::GetBrowserContextToUse(

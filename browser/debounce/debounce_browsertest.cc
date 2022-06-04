@@ -11,8 +11,8 @@
 #include "brave/browser/brave_browser_process.h"
 #include "brave/browser/brave_content_browser_client.h"
 #include "brave/browser/extensions/brave_base_local_data_files_browsertest.h"
-#include "brave/common/brave_paths.h"
 #include "brave/components/brave_shields/browser/brave_shields_util.h"
+#include "brave/components/constants/brave_paths.h"
 #include "brave/components/debounce/browser/debounce_component_installer.h"
 #include "brave/components/debounce/common/features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -299,6 +299,15 @@ IN_PROC_BROWSER_TEST_F(DebounceBrowserTest, NoParamMatch) {
 IN_PROC_BROWSER_TEST_F(DebounceBrowserTest, IgnoreExtraKeys) {
   ASSERT_TRUE(InstallMockExtension());
   GURL base_url = embedded_test_server()->GetURL("simple.g.com", "/");
+  GURL landing_url = embedded_test_server()->GetURL("z.com", "/");
+  GURL original_url = add_redirect_param(base_url, landing_url);
+  NavigateToURLAndWaitForRedirects(original_url, landing_url);
+}
+
+// Test that URLs in private registries are treated the same as all other URLs.
+IN_PROC_BROWSER_TEST_F(DebounceBrowserTest, ExcludePrivateRegistries) {
+  ASSERT_TRUE(InstallMockExtension());
+  GURL base_url = embedded_test_server()->GetURL("example.blogspot.com", "/");
   GURL landing_url = embedded_test_server()->GetURL("z.com", "/");
   GURL original_url = add_redirect_param(base_url, landing_url);
   NavigateToURLAndWaitForRedirects(original_url, landing_url);

@@ -37,6 +37,7 @@
   <message name="IDS_WALLET_ETH_SEND_TRANSACTION_FROM_EMPTY" desc="Transaction data is not validated">Transaction data 'from' must be specified</message>
   <message name="IDS_WALLET_GET_NONCE_ERROR" desc="Failed to get nonce">Failed to get next nonce value</message>
   <message name="IDS_WALLET_SEND_TRANSACTION_TO_INVALID" desc="Transaction data is not validated">Transaction data 'to' must be a valid address when specified</message>
+  <message name="IDS_WALLET_NOT_AUTHED" desc="Method or account not authorized">The requested method and/or account has not been authorized by the user.</message>
   <message name="IDS_BRAVE_WALLET_DEFI_CATEGORY" desc="Defi apps title">Defi apps</message>
   <message name="IDS_BRAVE_WALLET_NFT_CATEGORY" desc="NFT marketplace title">NFT marketplaces</message>
   <message name="IDS_BRAVE_WALLET_SEARCH_CATEGORY" desc="Filter apps placeholder">Search results</message>
@@ -465,6 +466,11 @@
   </message>
   <message name="IDS_WALLET_FIL_SEND_TRANSACTION_TO" desc="Error message if transaction 'to' is empty">Transaction data 'to' must be specified</message>
   <message name="IDS_WALLET_FIL_SEND_TRANSACTION_FROM_INVALID" desc="Transaction data is not validated">Transaction data 'from' must be a valid Filecoin address</message>
+  <message name="IDS_BRAVE_WALLET_LEDGER_FILECOIN_UNLOCK_ERROR" desc="Error message if unable to unlock Filecoin app on Ledger">Ledger device locked</message>
+  <message name="IDS_WALLET_TRANSACTION_STATUS_UPDATE_MESSAGE_TEXT" desc="Notification message text when transaction status updated">Click here to check transaction details for <ph name="VALUE">$1<ex>0xABC</ex></ph></message>
+  <message name="IDS_WALLET_TRANSACTION_STATUS_UPDATE_MESSAGE_TITLE_CONFIRMED" desc="Notification message title when transaction confirmed">Transaction confirmed</message>
+  <message name="IDS_WALLET_TRANSACTION_STATUS_UPDATE_MESSAGE_TITLE_ERROR" desc="Notification message title when transaction error">Transaction error</message>
+  <message name="IDS_WALLET_TRANSACTION_STATUS_UPDATE_MESSAGE_TITLE_DROPPED" desc="Notification message title when transaction dropped">Transaction dropped</message>  
   <message name="IDS_BRAVE_WALLET_INFORMATION" desc="Information label shown in coin market detail view">Information</message>
   <message name="IDS_BRAVE_WALLET_RANK_STAT" desc="Label show in coin market detail view for coin market rank">Rank</message>
   <message name="IDS_BRAVE_WALLET_VOLUME_STAT" desc="Label show in coin market detail view for coin market 24 hour volume">24h Volume</message>

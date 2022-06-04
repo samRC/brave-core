@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
-#include "brave/common/url_constants.h"
+#include "brave/components/constants/url_constants.h"
 #include "brave/components/crypto_dot_com/browser/buildflags/buildflags.h"
 #include "brave/components/ftx/browser/buildflags/buildflags.h"
 #include "brave/components/ipfs/buildflags/buildflags.h"
@@ -261,6 +261,7 @@ void CustomizeWebUIHTMLSource(const std::string &name,
         { "rewardsOptInHeader", IDS_REWARDS_WIDGET_OPT_IN_HEADER },
         { "rewardsOptInTerms", IDS_BRAVE_REWARDS_ONBOARDING_TERMS },
         { "rewardsOptInText", IDS_REWARDS_WIDGET_OPT_IN_TEXT },
+        { "rewardsLogInToSeeBalance", IDS_REWARDS_LOG_IN_TO_SEE_BALANCE },
         { "rewardsPaymentCheckStatus", IDS_REWARDS_PAYMENT_CHECK_STATUS },
         { "rewardsPaymentCompleted", IDS_REWARDS_PAYMENT_COMPLETED },
         { "rewardsPaymentPending", IDS_REWARDS_PAYMENT_PENDING },
@@ -273,6 +274,8 @@ void CustomizeWebUIHTMLSource(const std::string &name,
         { "rewardsTokenBalance", IDS_REWARDS_WIDGET_TOKEN_BALANCE },
         { "rewardsTokenGrantTitle", IDS_REWARDS_WIDGET_TOKEN_GRANT_TITLE },
         { "rewardsWidgetBraveRewards", IDS_BRAVE_UI_BRAVE_REWARDS },
+        { "rewardsBrowserCannotReceiveAds",  IDS_REWARDS_BROWSER_CANNOT_RECEIVE_ADS },  // NOLINT
+        { "rewardsBrowserNeedsUpdateToSeeAds",  IDS_REWARDS_BROWSER_NEEDS_UPDATE_TO_SEE_ADS },  // NOLINT
 
         // Brave Talk  Widget
         { "braveTalkWidgetTitle", IDS_BRAVE_TALK_WIDGET_TITLE },
@@ -533,14 +536,8 @@ void CustomizeWebUIHTMLSource(const std::string &name,
         { "redirectModalRegionNotSupportedTitle", IDS_BRAVE_REWARDS_LOCAL_REDIRECT_MODAL_REGION_NOT_SUPPORTED_TITLE},     // NOLINT
         { "redirectModalUpholdBATNotAllowedText", IDS_BRAVE_REWARDS_LOCAL_REDIRECT_MODAL_UPHOLD_BAT_NOT_ALLOWED_TEXT},     // NOLINT
         { "redirectModalUpholdBATNotAllowedTitle", IDS_BRAVE_REWARDS_LOCAL_REDIRECT_MODAL_UPHOLD_BAT_NOT_ALLOWED_TITLE},     // NOLINT
-        { "redirectModalUpholdBlockedUserText", IDS_BRAVE_REWARDS_LOCAL_REDIRECT_MODAL_UPHOLD_BLOCKED_USER_TEXT},     // NOLINT
-        { "redirectModalUpholdBlockedUserTitle", IDS_BRAVE_REWARDS_LOCAL_REDIRECT_MODAL_UPHOLD_BLOCKED_USER_TITLE},     // NOLINT
-        { "redirectModalUpholdCustomerDueDiligenceRequiredText", IDS_BRAVE_REWARDS_LOCAL_REDIRECT_MODAL_UPHOLD_CUSTOMER_DUE_DILIGENCE_REQUIRED_TEXT},     // NOLINT
-        { "redirectModalUpholdCustomerDueDiligenceRequiredTitle", IDS_BRAVE_REWARDS_LOCAL_REDIRECT_MODAL_UPHOLD_CUSTOMER_DUE_DILIGENCE_REQUIRED_TITLE},     // NOLINT
-        { "redirectModalUpholdPendingUserText", IDS_BRAVE_REWARDS_LOCAL_REDIRECT_MODAL_UPHOLD_PENDING_USER_TEXT},     // NOLINT
-        { "redirectModalUpholdPendingUserTitle", IDS_BRAVE_REWARDS_LOCAL_REDIRECT_MODAL_UPHOLD_PENDING_USER_TITLE},     // NOLINT
-        { "redirectModalUpholdRestrictedUserText", IDS_BRAVE_REWARDS_LOCAL_REDIRECT_MODAL_UPHOLD_RESTRICTED_USER_TEXT},     // NOLINT
-        { "redirectModalUpholdRestrictedUserTitle", IDS_BRAVE_REWARDS_LOCAL_REDIRECT_MODAL_UPHOLD_RESTRICTED_USER_TITLE},     // NOLINT
+        { "redirectModalUpholdInsufficientCapabilitiesText", IDS_BRAVE_REWARDS_LOCAL_REDIRECT_MODAL_UPHOLD_INSUFFICIENT_CAPABILITIES_TEXT},     // NOLINT
+        { "redirectModalUpholdInsufficientCapabilitiesTitle", IDS_BRAVE_REWARDS_LOCAL_REDIRECT_MODAL_UPHOLD_INSUFFICIENT_CAPABILITIES_TITLE},     // NOLINT
         { "redirectModalWalletOwnershipVerificationFailureText", IDS_BRAVE_REWARDS_LOCAL_REDIRECT_MODAL_WALLET_OWNERSHIP_VERIFICATION_FAILURE_TEXT},     // NOLINT
         { "redirectModalWalletOwnershipVerificationFailureTitle", IDS_BRAVE_REWARDS_LOCAL_REDIRECT_MODAL_WALLET_OWNERSHIP_VERIFICATION_FAILURE_TITLE},     // NOLINT
         { "tosAndPp", IDS_BRAVE_REWARDS_LOCAL_TOS_AND_PP},     // NOLINT
@@ -549,6 +546,9 @@ void CustomizeWebUIHTMLSource(const std::string &name,
         { "dismiss",  IDS_BRAVE_REWARDS_LOCAL_ADS_CONFIRMATION_TYPE_DISMISS },
         { "landed",  IDS_BRAVE_REWARDS_LOCAL_ADS_CONFIRMATION_TYPE_LANDED },
         { "view",  IDS_BRAVE_REWARDS_LOCAL_ADS_CONFIRMATION_TYPE_VIEW },
+
+        { "rewardsBrowserCannotReceiveAds",  IDS_REWARDS_BROWSER_CANNOT_RECEIVE_ADS },  // NOLINT
+        { "rewardsBrowserNeedsUpdateToSeeAds",  IDS_REWARDS_BROWSER_NEEDS_UPDATE_TO_SEE_ADS },  // NOLINT
 
         { "activityCopy", IDS_BRAVE_UI_ACTIVITY_COPY },
         { "activityNote", IDS_BRAVE_UI_ACTIVITY_NOTE },
@@ -697,6 +697,7 @@ void CustomizeWebUIHTMLSource(const std::string &name,
         { "rewardsContribute", IDS_BRAVE_UI_REWARDS_CONTRIBUTE },
         { "rewardsContributeAttention", IDS_BRAVE_UI_REWARDS_CONTRIBUTE_ATTENTION },             // NOLINT
         { "rewardsGrantDaysRemaining", IDS_REWARDS_WIDGET_GRANT_DAYS_REMAINING },  // NOLINT
+        { "rewardsLogInToSeeBalance", IDS_REWARDS_LOG_IN_TO_SEE_BALANCE },
         { "rewardsPaymentCheckStatus", IDS_REWARDS_PAYMENT_CHECK_STATUS },
         { "rewardsPaymentCompleted", IDS_REWARDS_PAYMENT_COMPLETED },
         { "rewardsPaymentPending", IDS_REWARDS_PAYMENT_PENDING },

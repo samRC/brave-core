@@ -8,6 +8,7 @@ import * as statsAPI from './stats'
 import * as privateTabDataAPI from './privateTabData'
 import * as torTabDataAPI from './torTabData'
 import * as wallpaper from './wallpaper'
+import * as newTabAdsDataAPI from './newTabAdsData'
 
 export type InitialData = {
   preferences: NewTab.Preferences
@@ -26,11 +27,13 @@ export type PreInitialRewardsData = {
   rewardsEnabled: boolean
   enabledAds: boolean
   adsSupported: boolean
+  needsBrowserUpdateToSeeAds: boolean
 }
 
 export type InitialRewardsData = {
   report: NewTab.RewardsBalanceReport
   balance: NewTab.RewardsBalance
+  externalWallet?: RewardsExtension.ExternalWallet
   adsAccountStatement: NewTab.AdsAccountStatement
   parameters: NewTab.RewardsParameters
 }
@@ -109,19 +112,28 @@ export async function getInitialData (): Promise<InitialData> {
 }
 
 export async function getRewardsPreInitialData (): Promise<PreInitialRewardsData> {
-  const [rewardsEnabled, enabledAds, adsSupported] = await Promise.all([
+  const [
+    rewardsEnabled,
+    enabledAds,
+    adsSupported,
+    adsData
+  ] = await Promise.all([
     new Promise<boolean>(
       (resolve) => chrome.braveRewards.getRewardsEnabled(resolve)),
     new Promise<boolean>(
       (resolve) => chrome.braveRewards.getAdsEnabled(resolve)),
     new Promise<boolean>(
-      (resolve) => chrome.braveRewards.getAdsSupported(resolve))
-  ])
+      (resolve) => chrome.braveRewards.getAdsSupported(resolve)),
+    newTabAdsDataAPI.getNewTabAdsData()
+    ])
+
+  const needsBrowserUpdateToSeeAds = adsData.needsBrowserUpdateToSeeAds
 
   return {
     rewardsEnabled,
     enabledAds,
-    adsSupported
+    adsSupported,
+    needsBrowserUpdateToSeeAds
   }
 }
 
@@ -131,7 +143,8 @@ export async function getRewardsInitialData (): Promise<InitialRewardsData> {
       adsAccountStatement,
       report,
       balance,
-      parameters
+      parameters,
+      externalWallet
     ] = await Promise.all([
       new Promise(resolve => chrome.braveRewards.getAdsAccountStatement((success: boolean, adsAccountStatement: NewTab.AdsAccountStatement) => {
         resolve(success ? adsAccountStatement : undefined)
@@ -146,6 +159,9 @@ export async function getRewardsInitialData (): Promise<InitialRewardsData> {
         resolve(parameters)
       })),
       new Promise(resolve => {
+        chrome.braveRewards.getExternalWallet((_, wallet) => resolve(wallet))
+      }),
+      new Promise(resolve => {
         chrome.braveRewards.fetchPromotions()
         resolve(true)
       })
@@ -154,7 +170,8 @@ export async function getRewardsInitialData (): Promise<InitialRewardsData> {
       adsAccountStatement,
       report,
       balance,
-      parameters
+      parameters,
+      externalWallet
     } as InitialRewardsData
   } catch (err) {
     throw Error(err)

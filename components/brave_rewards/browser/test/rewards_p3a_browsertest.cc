@@ -12,7 +12,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "bat/ads/pref_names.h"
 #include "brave/browser/brave_rewards/rewards_service_factory.h"
-#include "brave/common/brave_paths.h"
 #include "brave/components/brave_rewards/browser/rewards_p3a.h"
 #include "brave/components/brave_rewards/browser/rewards_service_impl.h"
 #include "brave/components/brave_rewards/browser/rewards_service_observer.h"
@@ -23,6 +22,7 @@
 #include "brave/components/brave_rewards/browser/test/common/rewards_browsertest_response.h"
 #include "brave/components/brave_rewards/browser/test/common/rewards_browsertest_util.h"
 #include "brave/components/brave_rewards/common/pref_names.h"
+#include "brave/components/constants/brave_paths.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -132,6 +132,14 @@ class RewardsP3ABrowserTest : public InProcessBrowserTest,
     return;
   }
 
+  void TurnOnRewards() {
+    rewards_service_->SetAutoContributeEnabled(true);
+    // It is expected that |SetAdsEnabled| will start the Rewards utility
+    // process if necessary and create a Rewards payment ID for the profile.
+    rewards_service_->SetAdsEnabled(true);
+    WaitForRewardsEnable();
+  }
+
   content::WebContents* contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
@@ -170,7 +178,6 @@ using brave_rewards::p3a::AdsEnabledDuration;
 
 IN_PROC_BROWSER_TEST_F(RewardsP3ABrowserTest, RewardsDisabled) {
   rewards_browsertest_util::StartProcess(rewards_service_);
-
   WaitForRewardsInitialization();
 
   histogram_tester_->ExpectBucketCount("Brave.Rewards.WalletBalance.3", 1, 1);
@@ -188,8 +195,7 @@ IN_PROC_BROWSER_TEST_F(RewardsP3ABrowserTest, Duration) {
   PrefService* prefs = browser()->profile()->GetPrefs();
 
   // Turn rewards on.
-  rewards_service_->SetAdsEnabled(true);
-  WaitForRewardsEnable();
+  TurnOnRewards();
   histogram_tester_->ExpectBucketCount("Brave.Rewards.AdsEnabledDuration",
                                        AdsEnabledDuration::kStillEnabled, 1);
 
@@ -260,27 +266,15 @@ IN_PROC_BROWSER_TEST_F(RewardsP3ABrowserTest, Duration) {
 
 IN_PROC_BROWSER_TEST_F(RewardsP3ABrowserTest,
                        WalletStateWalletCreatedNoGrantsClaimedNoFundsAdded) {
-  rewards_browsertest_util::StartProcess(rewards_service_);
-  rewards_browsertest_util::CreateWallet(rewards_service_);
-
-  rewards_service_->SetAutoContributeEnabled(true);
-  rewards_service_->SetAdsEnabled(true);
-
+  TurnOnRewards();
   FetchBalance();
-
   histogram_tester_->ExpectBucketCount("Brave.Rewards.WalletState", 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(RewardsP3ABrowserTest,
                        WalletStateWalletCreatedGrantsClaimedNoFundsAdded) {
-  rewards_browsertest_util::StartProcess(rewards_service_);
-  rewards_browsertest_util::CreateWallet(rewards_service_);
-
-  context_helper_->LoadURL(rewards_browsertest_util::GetRewardsUrl());
-
-  rewards_service_->SetAutoContributeEnabled(true);
-  rewards_service_->SetAdsEnabled(true);
-
+  TurnOnRewards();
+  context_helper_->LoadRewardsPage();
   contribution_->AddBalance(promotion_->ClaimPromotionViaCode());
 
   FetchBalance();
@@ -291,15 +285,7 @@ IN_PROC_BROWSER_TEST_F(RewardsP3ABrowserTest,
 IN_PROC_BROWSER_TEST_F(RewardsP3ABrowserTest,
                        WalletStateWalletCreatedNoGrantsClaimedFundsAdded) {
   response_->SetUserFundsBalance(20.0);
-
-  rewards_browsertest_util::StartProcess(rewards_service_);
-  rewards_browsertest_util::CreateWallet(rewards_service_);
-
-  context_helper_->LoadURL(rewards_browsertest_util::GetRewardsUrl());
-
-  rewards_service_->SetAutoContributeEnabled(true);
-  rewards_service_->SetAdsEnabled(true);
-
+  TurnOnRewards();
   FetchBalance();
 
   EXPECT_GT(histogram_tester_->GetBucketCount("Brave.Rewards.WalletState", 3),
@@ -310,14 +296,8 @@ IN_PROC_BROWSER_TEST_F(RewardsP3ABrowserTest,
                        WalletStateWalletCreatedGrantsClaimedFundsAdded) {
   response_->SetUserFundsBalance(20.0);
 
-  rewards_browsertest_util::StartProcess(rewards_service_);
-  rewards_browsertest_util::CreateWallet(rewards_service_);
-
-  context_helper_->LoadURL(rewards_browsertest_util::GetRewardsUrl());
-
-  rewards_service_->SetAutoContributeEnabled(true);
-  rewards_service_->SetAdsEnabled(true);
-
+  TurnOnRewards();
+  context_helper_->LoadRewardsPage();
   contribution_->AddBalance(promotion_->ClaimPromotionViaCode());
 
   FetchBalance();
@@ -328,7 +308,6 @@ IN_PROC_BROWSER_TEST_F(RewardsP3ABrowserTest,
 
 IN_PROC_BROWSER_TEST_F(RewardsP3ABrowserTest,
                        WalletStateWalletDisabledAfterCreation) {
-  rewards_browsertest_util::StartProcess(rewards_service_);
   rewards_browsertest_util::CreateWallet(rewards_service_);
 
   rewards_service_->SetAdsEnabled(false);
@@ -340,14 +319,7 @@ IN_PROC_BROWSER_TEST_F(RewardsP3ABrowserTest,
 IN_PROC_BROWSER_TEST_F(RewardsP3ABrowserTest, WalletBalanceZeroBAT) {
   response_->SetUserFundsBalance(0.0);
 
-  rewards_browsertest_util::StartProcess(rewards_service_);
-  rewards_browsertest_util::CreateWallet(rewards_service_);
-
-  context_helper_->LoadURL(rewards_browsertest_util::GetRewardsUrl());
-
-  rewards_service_->SetAutoContributeEnabled(true);
-  rewards_service_->SetAdsEnabled(true);
-
+  TurnOnRewards();
   FetchBalance();
 
   EXPECT_GT(
@@ -357,14 +329,7 @@ IN_PROC_BROWSER_TEST_F(RewardsP3ABrowserTest, WalletBalanceZeroBAT) {
 IN_PROC_BROWSER_TEST_F(RewardsP3ABrowserTest, WalletBalanceLessThan10BAT) {
   response_->SetUserFundsBalance(9.0);
 
-  rewards_browsertest_util::StartProcess(rewards_service_);
-  rewards_browsertest_util::CreateWallet(rewards_service_);
-
-  context_helper_->LoadURL(rewards_browsertest_util::GetRewardsUrl());
-
-  rewards_service_->SetAutoContributeEnabled(true);
-  rewards_service_->SetAdsEnabled(true);
-
+  TurnOnRewards();
   FetchBalance();
 
   EXPECT_GT(
@@ -374,14 +339,7 @@ IN_PROC_BROWSER_TEST_F(RewardsP3ABrowserTest, WalletBalanceLessThan10BAT) {
 IN_PROC_BROWSER_TEST_F(RewardsP3ABrowserTest, WalletBalanceLessThan50BAT) {
   response_->SetUserFundsBalance(20.0);
 
-  rewards_browsertest_util::StartProcess(rewards_service_);
-  rewards_browsertest_util::CreateWallet(rewards_service_);
-
-  context_helper_->LoadURL(rewards_browsertest_util::GetRewardsUrl());
-
-  rewards_service_->SetAutoContributeEnabled(true);
-  rewards_service_->SetAdsEnabled(true);
-
+  TurnOnRewards();
   FetchBalance();
 
   EXPECT_GT(
@@ -391,14 +349,7 @@ IN_PROC_BROWSER_TEST_F(RewardsP3ABrowserTest, WalletBalanceLessThan50BAT) {
 IN_PROC_BROWSER_TEST_F(RewardsP3ABrowserTest, WalletBalanceMoreThan50BAT) {
   response_->SetUserFundsBalance(60.0);
 
-  rewards_browsertest_util::StartProcess(rewards_service_);
-  rewards_browsertest_util::CreateWallet(rewards_service_);
-
-  context_helper_->LoadURL(rewards_browsertest_util::GetRewardsUrl());
-
-  rewards_service_->SetAutoContributeEnabled(true);
-  rewards_service_->SetAdsEnabled(true);
-
+  TurnOnRewards();
   FetchBalance();
 
   EXPECT_GT(
