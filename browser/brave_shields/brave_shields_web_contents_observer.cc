@@ -31,16 +31,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "brave/common/extensions/api/brave_shields.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
-#include "extensions/browser/event_router.h"
-#include "extensions/browser/extension_api_frame_id_map.h"
-
-using extensions::Event;
-using extensions::EventRouter;
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 #include "brave/browser/ui/brave_shields_data_controller.h"
 #endif
@@ -173,24 +163,6 @@ void BraveShieldsWebContentsObserver::DispatchBlockedEventForWebContents(
     const std::string& block_type,
     const std::string& subresource,
     WebContents* web_contents) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (!web_contents) {
-    return;
-  }
-  EventRouter* event_router =
-      EventRouter::Get(web_contents->GetBrowserContext());
-  if (event_router) {
-    extensions::api::brave_shields::OnBlocked::Details details;
-    details.tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
-    details.block_type = block_type;
-    details.subresource = subresource;
-    std::unique_ptr<Event> event(
-        new Event(extensions::events::BRAVE_AD_BLOCKED,
-                  extensions::api::brave_shields::OnBlocked::kEventName,
-                  extensions::api::brave_shields::OnBlocked::Create(details)));
-    event_router->BroadcastEvent(std::move(event));
-  }
-#endif
   if (base::FeatureList::IsEnabled(
           brave_shields::features::kBraveShieldsPanelV2)) {
     if (!web_contents)

@@ -105,11 +105,6 @@ void BraveActionsContainer::Init() {
   // make sure separator is at index 0
   AddChildViewAt(brave_button_separator_, 0);
   AddActionViewForShields();
-  // Populate actions
-  if (base::FeatureList::IsEnabled(
-          brave_shields::features::kBraveShieldsPanelV1)) {
-    actions_[brave_extension_id].position_ = 1;
-  }
   actions_[brave_rewards_extension_id].position_ = ACTION_ANY_POSITION;
 
   // React to Brave Rewards preferences changes.
@@ -366,7 +361,6 @@ void BraveActionsContainer::OnExtensionSystemReady() {
   extension_action_observer_.Observe(extension_action_api_);
   brave_action_observer_.Observe(brave_action_api_);
   // Check if extensions already loaded
-  AddAction(brave_extension_id);
   AddAction(brave_rewards_extension_id);
 }
 
