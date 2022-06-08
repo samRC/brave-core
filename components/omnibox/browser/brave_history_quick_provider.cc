@@ -8,7 +8,7 @@
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/history_quick_provider.h"
-#include "components/omnibox/browser/omnibox_prefs.h"
+#include "brave/components/omnibox/browser/brave_omnibox_prefs.h"
 #include "components/prefs/pref_service.h"
 
 BraveHistoryQuickProvider::BraveHistoryQuickProvider(

@@ -4,8 +4,7 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include <memory>
-#include "brave/browser/brave_profile_prefs.h"
-#include "components/omnibox/browser/omnibox_prefs.h"
+#include "brave/components/omnibox/browser/brave_omnibox_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_store.h"
 #include "components/prefs/testing_pref_service.h"
@@ -15,7 +14,7 @@ class OmniboxAutocompleteUnitTest : public testing::Test {
  public:
   OmniboxAutocompleteUnitTest() {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    brave::RegisterOmniboxProfilePrefs(pref_service_->registry());
+    omnibox::RegisterBraveProfilePrefs(pref_service_->registry());
   }
 
   PrefService* prefs() { return pref_service_.get(); }

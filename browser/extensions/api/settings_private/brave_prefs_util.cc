@@ -27,6 +27,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/gcm_driver/gcm_buildflags.h"
+#include "brave/components/omnibox/browser/brave_omnibox_prefs.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "extensions/buildflags/buildflags.h"

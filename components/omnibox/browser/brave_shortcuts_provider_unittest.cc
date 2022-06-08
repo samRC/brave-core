@@ -21,7 +21,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
-#include "components/omnibox/browser/omnibox_prefs.h"
+#include "brave/components/omnibox/browser/brave_omnibox_prefs.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/shortcuts_database.h"
 #include "components/omnibox/browser/shortcuts_provider.h"

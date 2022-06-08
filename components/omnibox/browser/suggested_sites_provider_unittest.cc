@@ -7,7 +7,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "brave/components/omnibox/browser/brave_fake_autocomplete_provider_client.h"
-#include "components/omnibox/browser/omnibox_prefs.h"
+#include "brave/components/omnibox/browser/brave_omnibox_prefs.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -13,7 +13,6 @@ class PrefRegistrySyncable;
 
 namespace brave {
 
-void RegisterOmniboxProfilePrefs(PrefRegistrySimple* registry);
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 }  // namespace brave

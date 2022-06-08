@@ -5,7 +5,7 @@
 
 #include "brave/components/omnibox/browser/brave_history_url_provider.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/omnibox/browser/omnibox_prefs.h"
+#include "brave/components/omnibox/browser/brave_omnibox_prefs.h"
 #include "components/prefs/pref_service.h"
 
 BraveHistoryURLProvider::BraveHistoryURLProvider(

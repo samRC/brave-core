@@ -15,7 +15,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_prefs.h"
+#include "brave/components/omnibox/browser/brave_omnibox_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 

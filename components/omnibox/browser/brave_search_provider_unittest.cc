@@ -42,7 +42,7 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
-#include "components/omnibox/browser/omnibox_prefs.h"
+#include "brave/components/omnibox/browser/brave_omnibox_prefs.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/common/omnibox_features.h"

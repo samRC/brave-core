@@ -19,7 +19,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
-#include "brave/browser/brave_profile_prefs.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
@@ -35,7 +34,7 @@
 #include "components/omnibox/browser/history_test_util.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/in_memory_url_index_test_util.h"
-#include "components/omnibox/browser/omnibox_prefs.h"
+#include "brave/components/omnibox/browser/brave_omnibox_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -107,7 +106,7 @@ class BraveHistoryQuickProviderTest : public testing::Test {
     client_ = std::make_unique<FakeAutocompleteProviderClient>();
     auto* registry =
         static_cast<TestingPrefServiceSimple*>(client_->GetPrefs())->registry();
-    brave::RegisterOmniboxProfilePrefs(registry);
+    omnibox::RegisterBraveProfilePrefs(registry);
 
     CHECK(history_dir_.CreateUniqueTempDir());
     client_->set_history_service(

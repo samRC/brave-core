@@ -3,7 +3,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "src/components/omnibox/browser/omnibox_prefs.cc"
+#include "brave/components/omnibox/browser/brave_omnibox_prefs.h"
+
+#include "components/prefs/pref_registry_simple.h"
 
 namespace omnibox {
 
@@ -16,4 +18,13 @@ const char kHistorySuggestionsEnabled[] =
 const char kBookmarkSuggestionsEnabled[] =
     "brave.omnibox.bookmark_suggestions_enabled";
 
-}  // namespace omnibox
+void RegisterBraveProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(kAutocompleteEnabled, true);
+  registry->RegisterBooleanPref(kTopSiteSuggestionsEnabled, true);
+  registry->RegisterBooleanPref(kBraveSuggestedSiteSuggestionsEnabled,
+                                false);
+  registry->RegisterBooleanPref(kHistorySuggestionsEnabled, true);
+  registry->RegisterBooleanPref(kBookmarkSuggestionsEnabled, true);
+}
+    
+}
