@@ -36,7 +36,7 @@ const pullL10n = (options) => {
       let cmd_args = ['script/pull-l10n.py', '--source_string_path', sourceStringPath]
       if (options.debug)
         cmd_args.push('--debug')
-      util.run('python3', cmd_args, cmdOptions)
+      util.run('/Python39/python3', cmd_args, cmdOptions)
     }
   })
 }
