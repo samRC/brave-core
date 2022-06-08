@@ -14,20 +14,19 @@
 
 class SuggestedSitesProviderTest : public testing::Test {
  public:
-  SuggestedSitesProviderTest() :
-      provider_(new SuggestedSitesProvider(&client_)) {
+  SuggestedSitesProviderTest()
+      : provider_(new SuggestedSitesProvider(&client_)) {
+    client_.GetPrefs()->SetBoolean(
+        omnibox::kBraveSuggestedSiteSuggestionsEnabled, true);
   }
 
   AutocompleteInput CreateAutocompleteInput(base::StringPiece text) {
     AutocompleteInput input(base::UTF8ToUTF16(text),
-                            metrics::OmniboxEventProto::OTHER,
-                            classifier_);
+                            metrics::OmniboxEventProto::OTHER, classifier_);
     return input;
   }
 
-  PrefService* prefs() {
-    return client_.GetPrefs();
-  }
+  PrefService* prefs() { return client_.GetPrefs(); }
 
  protected:
   TestSchemeClassifier classifier_;
@@ -53,7 +52,7 @@ TEST_F(SuggestedSitesProviderTest, FourOrMoreChars) {
   EXPECT_TRUE(provider_->matches().empty());
 
   // Less than 4 chars no match
-  provider_->Start(CreateAutocompleteInput("bitc"), false);
+  provider_->Start(CreateAutocompleteInput("bitco"), false);
   EXPECT_FALSE(provider_->matches().empty());
 }
 
