@@ -5,8 +5,8 @@
 
 #include "brave/components/omnibox/browser/brave_bookmark_provider.h"
 #include "brave/components/omnibox/browser/brave_history_quick_provider.h"
-#include "components/omnibox/browser/bookmark_provider.h"
 #include "brave/components/omnibox/browser/brave_omnibox_prefs.h"
+#include "components/omnibox/browser/bookmark_provider.h"
 #include "components/prefs/pref_service.h"
 
 BraveBookmarkProvider::BraveBookmarkProvider(AutocompleteProviderClient* client)

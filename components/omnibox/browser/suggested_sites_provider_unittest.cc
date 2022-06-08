@@ -52,7 +52,7 @@ TEST_F(SuggestedSitesProviderTest, FourOrMoreChars) {
   EXPECT_TRUE(provider_->matches().empty());
 
   // Less than 4 chars no match
-  provider_->Start(CreateAutocompleteInput("bitco"), false);
+  provider_->Start(CreateAutocompleteInput("bitc"), false);
   EXPECT_FALSE(provider_->matches().empty());
 }
 

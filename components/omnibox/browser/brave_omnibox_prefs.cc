@@ -21,10 +21,9 @@ const char kBookmarkSuggestionsEnabled[] =
 void RegisterBraveProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kAutocompleteEnabled, true);
   registry->RegisterBooleanPref(kTopSiteSuggestionsEnabled, true);
-  registry->RegisterBooleanPref(kBraveSuggestedSiteSuggestionsEnabled,
-                                false);
+  registry->RegisterBooleanPref(kBraveSuggestedSiteSuggestionsEnabled, false);
   registry->RegisterBooleanPref(kHistorySuggestionsEnabled, true);
   registry->RegisterBooleanPref(kBookmarkSuggestionsEnabled, true);
 }
-    
-}
+
+}  // namespace omnibox

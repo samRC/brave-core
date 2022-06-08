@@ -21,6 +21,5 @@ void BraveSearchProvider::DoHistoryQuery(bool minimal_changes) {
   if (!client()->GetPrefs()->GetBoolean(omnibox::kHistorySuggestionsEnabled))
     return;
 
-
   SearchProvider::DoHistoryQuery(minimal_changes);
 }

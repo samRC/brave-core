@@ -18,6 +18,6 @@ extern const char kBookmarkSuggestionsEnabled[];
 
 void RegisterBraveProfilePrefs(PrefRegistrySimple* registry);
 
-}
+}  // namespace omnibox
 
 #endif  // BRAVE_COMPONENTS_OMNIBOX_BROWSER_BRAVE_OMNIBOX_PREFS_H_
