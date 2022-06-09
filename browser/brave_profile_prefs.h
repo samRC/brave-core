@@ -6,7 +6,6 @@
 #ifndef BRAVE_BROWSER_BRAVE_PROFILE_PREFS_H_
 #define BRAVE_BROWSER_BRAVE_PROFILE_PREFS_H_
 
-class PrefRegistrySimple;
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
