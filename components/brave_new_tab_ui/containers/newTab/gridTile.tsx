@@ -7,6 +7,7 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import * as React from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import * as ReactDOM from 'react-dom'
 import { getLocale } from '../../../common/locale'
 import * as gridSitesActions from '../../actions/grid_sites_actions'
 // Types
@@ -110,16 +111,25 @@ function TopSite(props: Props) {
     props.onShowEditTopSite(site)
   }, [props.onShowEditTopSite]);
 
+  const editMenuRef = useRef<HTMLElement>();
+  const bounds = editMenuRef.current?.getBoundingClientRect();
+  const radius = bounds ? Math.sqrt(bounds?.width ** 2 + bounds?.height ** 2) / 2 : 0;
+  const overlap = 0;
+  const editMenuStyle = {
+    top: (bounds?.bottom ?? 0),// - radius - overlap,
+    left: (bounds?.right ?? 0),// - radius - overlap,
+  };
+  console.log(bounds, radius, overlap, editMenuStyle)
+
   return <SiteTile site={props.siteData} draggable={sortable} isMenuShowing={showMenu}>
     {!siteData.defaultSRTopSite
       ? <TileActionsContainer>
-        <TileAction onClick={onShowTileMenu}>
+        <TileAction ref={editMenuRef as any} onClick={onShowTileMenu}>
           <EditIcon />
         </TileAction>
       </TileActionsContainer>
       : null}
-    {showMenu &&
-      <TileMenu ref={tileMenuRef}>
+      {showMenu && ReactDOM.createPortal(<TileMenu ref={tileMenuRef} style={editMenuStyle}>
         <TileMenuItem onClick={e => onEditTopSite(siteData, e)}>
           <EditMenuIcon />
           {getLocale('editSiteTileMenuItem')}
@@ -128,7 +138,7 @@ function TopSite(props: Props) {
           <TrashIcon />
           {getLocale('removeTileMenuItem')}
         </TileMenuItem>
-      </TileMenu>}
+      </TileMenu>, document.body)}
   </SiteTile>
 }
 

@@ -122,8 +122,8 @@ export const TileActionsContainer = styled('nav') <{}>`
 
 export const TileMenu = styled('div') <{}>`
   position: absolute;
-  top: 15px;
-  left: 80px;
+  margin-left: -12px;
+  margin-top: -12px;
   min-width: 185px;
   height: 72px;
   padding: 8px 0;
@@ -131,7 +131,7 @@ export const TileMenu = styled('div') <{}>`
   flex-direction: column;
   border-radius: 4px;
   box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.3);
-  z-index: 2;
+  z-index: 10;
 
   background: white;
   @media (prefers-color-scheme: dark) {
