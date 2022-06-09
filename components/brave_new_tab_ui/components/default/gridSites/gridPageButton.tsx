@@ -6,7 +6,7 @@ const StyledButton = styled('button')`
 
     cursor: pointer;
 
-    color: #ffffff;
+    color: var(--brave-palette-white);
     opacity: 0.5;
 
     :hover {
@@ -37,7 +37,7 @@ export default function GridPageButton(props: { page: number, pageContainerRef: 
 
 export const GridPageIndicatorContainer = styled('div') <{}>`
   position: absolute;
-  color: #ffffff;
+  color: var(--brave-palette-white);
 
   width: var(--list-page-button-size);
   height: var(--list-page-button-size);

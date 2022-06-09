@@ -78,9 +78,9 @@ export interface ListProps {
 
 export const List = styled('div') <ListProps>`
   height: 100%;
-  padding: 24px 56px 24px 24px;
   justify-self: start;
-  width: 596px;
+
+  padding-right: 86px;
   
   display: grid;
   align-items: normal;
@@ -96,6 +96,7 @@ export const PagesContainer = styled('div') <{}>`
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 24px;
 `
 
 export const ListPageButtonContainer = styled('div')<{}>`
