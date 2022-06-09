@@ -4,6 +4,7 @@ export const GridPagesContainer = styled('div') <{}>`
   display: flex;
   flex-direction: row;
 
+  padding: 24px 24px 0 24px;
   max-width: 596px;
   overflow-x: auto;
 
