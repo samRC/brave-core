@@ -1,5 +1,3 @@
-
-
 # Copyright (c) 2022 The Brave Authors. All rights reserved.
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -9,20 +7,28 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-      "//brave/components/omnibox/browser/brave_bookmark_provider_unittest.cc",
-      "//brave/components/omnibox/browser/brave_fake_autocomplete_provider_client.cc",
-      "//brave/components/omnibox/browser/brave_fake_autocomplete_provider_client.h",
-      "//brave/components/omnibox/browser/brave_history_quick_provider_unittest.cc",
-      "//brave/components/omnibox/browser/brave_history_url_provider_unittest.cc",
-      "//brave/components/omnibox/browser/brave_search_provider_unittest.cc",
-      "//brave/components/omnibox/browser/brave_shortcuts_provider_unittest.cc",
-      "//brave/components/omnibox/browser/omnibox_autocomplete_unittest.cc",
-      "//brave/components/omnibox/browser/suggested_sites_provider_unittest.cc",
-      "//brave/components/omnibox/browser/topsites_provider_unittest.cc",
+    "//brave/components/omnibox/browser/brave_bookmark_provider_unittest.cc",
+    "//brave/components/omnibox/browser/brave_fake_autocomplete_provider_client.cc",
+    "//brave/components/omnibox/browser/brave_fake_autocomplete_provider_client.h",
+    "//brave/components/omnibox/browser/brave_history_quick_provider_unittest.cc",
+    "//brave/components/omnibox/browser/brave_history_url_provider_unittest.cc",
+    "//brave/components/omnibox/browser/brave_search_provider_unittest.cc",
+    "//brave/components/omnibox/browser/brave_shortcuts_provider_unittest.cc",
+    "//brave/components/omnibox/browser/omnibox_autocomplete_unittest.cc",
+    "//brave/components/omnibox/browser/suggested_sites_provider_unittest.cc",
+    "//brave/components/omnibox/browser/topsites_provider_unittest.cc",
   ]
 
   deps = [
-      "//base/test:test_support",
-      "//components/omnibox/browser"
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/omnibox/browser",
+    "//components/prefs:test_support",
+    "//components/search_engines",
+    "//components/sync_preferences:test_support",
+    "//components/variations:test_support",
+    "//content/test:test_support",
+    "//services/network:test_support",
   ]
 }
