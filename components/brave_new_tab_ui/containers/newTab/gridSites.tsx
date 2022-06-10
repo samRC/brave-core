@@ -98,13 +98,8 @@ function TopSitesList(props: Props) {
   const keyboardSensor = useSensor(KeyboardSensor, {});
   const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
 
-  // Current theory:
-  // Either:
-  // 1. Sort the items how they're displayed, in a two row, infinite column
-  // layout
-  // 2. Multiple pages, use dndkit.
   return <PagesContainer>
-    <GridPagesContainer ref={gridPagesContainerRef as any} onScroll={scrollHandler}>
+    <GridPagesContainer customLinksEnabled={customLinksEnabled} ref={gridPagesContainerRef as any} onScroll={scrollHandler}>
       <DndContext onDragEnd={onSortEnd} autoScroll={autoScrollOptions} sensors={sensors}>
         <SortableContext items={gridSites}>
           {pages.map(page => <TopSitesPage key={page} page={page} maxGridSize={maxGridSize} {...props} />)}
@@ -112,13 +107,13 @@ function TopSitesList(props: Props) {
         </SortableContext>
       </DndContext>
     </GridPagesContainer>
-    <ListPageButtonContainer>
+    {customLinksEnabled && <ListPageButtonContainer>
       {pages.map(page => <GridPageButton
         key={page}
         page={page}
         pageContainerRef={gridPagesContainerRef} />)}
       <GridPageIndicator ref={indicatorRef as any} />
-    </ListPageButtonContainer>
+    </ListPageButtonContainer>}
   </PagesContainer>;
 }
 

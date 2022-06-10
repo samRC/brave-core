@@ -1,12 +1,12 @@
 import styled from 'styled-components';
 
-export const GridPagesContainer = styled('div') <{}>`
+export const GridPagesContainer = styled('div') <{ customLinksEnabled: boolean }>`
   display: flex;
   flex-direction: row;
 
   padding: 24px 24px 0 24px;
   max-width: calc((var(--grid-columns) + 1) * var(--grid-column-width));
-  overflow-x: auto;
+  overflow-x: ${p => p.customLinksEnabled ? 'auto' : 'hidden'};
 
   scroll-snap-type: x mandatory;
 
