@@ -22,6 +22,7 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -488,6 +489,8 @@ void BraveAddCommonStrings(content::WebUIDataSource* html_source,
     {"adblockSubscribeUrlUpdateFailed",
      IDS_BRAVE_ADBLOCK_SUBSCRIBE_URL_UPDATE_FAILED},
     {"adblockCustomListsLabel", IDS_BRAVE_ADBLOCK_CUSTOM_LISTS_LABEL},
+    {"doNotTrack", IDS_SETTINGS_BRAVE_ENABLE_DO_NOT_TRACK},
+    {"doNotTrackDialogTitle", IDS_SETTINGS_BRAVE_ENABLE_DO_NOT_TRACK_DIALOG_TITLE},
   };
 
   html_source->AddLocalizedStrings(localized_strings);
@@ -544,6 +547,12 @@ void BraveAddCommonStrings(content::WebUIDataSource* html_source,
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_BRAVE_REWARDS_AUTO_CONTRIBUTE_DESC_LABEL,
           kBraveTermsOfUseURL, kBravePrivacyPolicyURL));
+
+  html_source->AddString(
+      "doNotTrackDialogMessage",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_BRAVE_ENABLE_DO_NOT_TRACK_DIALOG_TEXT,
+          base::ASCIIToUTF16(chrome::kDoNotTrackLearnMoreURL)));
 }
 
 void BraveAddResources(content::WebUIDataSource* html_source,
