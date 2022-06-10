@@ -98,15 +98,17 @@ export const PagesContainer = styled('div') <{}>`
   flex-direction: column;
   align-items: center;
 
+  margin-bottom: 24px;
+
   --grid-columns: 6;
   --grid-column-width: 86px;
 
   @media screen and (max-width: 700px) {
-    --grid-columns: 3;
+    --grid-columns: 4;
   }
 
-  @media screen and (max-width: 390px) {
-    --grid-columns: 2;
+  @media screen and (max-width: 360px) {
+    --grid-columns: 3;
   }
 `
 
