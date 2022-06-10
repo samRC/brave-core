@@ -5,6 +5,7 @@
 
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { getScrollableParents, useParentScrolled } from '../../helpers/scrolling'
 import * as React from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import * as ReactDOM from 'react-dom'
@@ -112,14 +113,23 @@ function TopSite(props: Props) {
   }, [props.onShowEditTopSite]);
 
   const editMenuRef = useRef<HTMLElement>();
-  const bounds = editMenuRef.current?.getBoundingClientRect();
-  const radius = bounds ? Math.sqrt(bounds?.width ** 2 + bounds?.height ** 2) / 2 : 0;
-  const overlap = 0;
-  const editMenuStyle = {
-    top: (bounds?.bottom ?? 0),// - radius - overlap,
-    left: (bounds?.right ?? 0),// - radius - overlap,
-  };
-  console.log(bounds, radius, overlap, editMenuStyle)
+  const [scrollableParent] = getScrollableParents(editMenuRef.current);
+
+  const editMenuStyle = (() => {
+    const bounds = editMenuRef.current?.getBoundingClientRect();
+    const scrollableBounds = scrollableParent?.getBoundingClientRect();
+    if (!bounds || !scrollableBounds) return;
+    return {
+      top: bounds.bottom - scrollableBounds.y,
+      left: bounds.right,
+    };
+  })();
+
+  useParentScrolled(editMenuRef, () => {
+    setShowMenu(m => m);
+    console.log("Made it here")
+  });
+
 
   return <SiteTile site={props.siteData} draggable={sortable} isMenuShowing={showMenu}>
     {!siteData.defaultSRTopSite
@@ -138,7 +148,7 @@ function TopSite(props: Props) {
           <TrashIcon />
           {getLocale('removeTileMenuItem')}
         </TileMenuItem>
-      </TileMenu>, document.body)}
+      </TileMenu>, scrollableParent)}
   </SiteTile>
 }
 
