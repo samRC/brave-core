@@ -115,19 +115,21 @@ function TopSite(props: Props) {
   const editMenuRef = useRef<HTMLElement>();
   const [scrollableParent] = getScrollableParents(editMenuRef.current);
 
+  // Work out the style for the edit menu. Because it's rendered as a child of 
+  // the scrollable container we need to subtract the scrollable containers
+  // position to get the menu to align nicely with the child.
   const editMenuStyle = (() => {
     const bounds = editMenuRef.current?.getBoundingClientRect();
     const scrollableBounds = scrollableParent?.getBoundingClientRect();
     if (!bounds || !scrollableBounds) return;
     return {
       top: bounds.bottom - scrollableBounds.y,
-      left: bounds.right,
+      left: bounds.right - scrollableBounds.x,
     };
   })();
 
   useParentScrolled(editMenuRef, () => {
-    setShowMenu(m => m);
-    console.log("Made it here")
+    setShowMenu(false);
   });
 
 

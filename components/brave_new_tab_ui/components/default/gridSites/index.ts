@@ -122,7 +122,7 @@ export const TileActionsContainer = styled('nav') <{}>`
 
 export const TileMenu = styled('div') <{}>`
   position: absolute;
-  margin-left: -24px;
+  margin-left: -12px;
   margin-top: -12px;
   min-width: 185px;
   height: 72px;

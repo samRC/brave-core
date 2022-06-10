@@ -2,15 +2,17 @@ import * as React from "react";
 
 const overflowScrollableRegex = /(auto)|(scroll)/g;
 const isScrollable = (element: Element) => {
-    return (element.scrollWidth > element.clientWidth
-        || element.scrollHeight > element.clientHeight)
-        && overflowScrollableRegex.test(getComputedStyle(element).overflow);
+    return overflowScrollableRegex.test(getComputedStyle(element).overflow);
 }
 
-export const getScrollableParents = (element: Element | null | undefined) => {
+interface Options {
+    limit: number;
+}
+
+export const getScrollableParents = (element: Element | null | undefined, options?: Options) => {
     const scrollableElements: Element[] = [];
 
-    while (element) {
+    while (element && (!options?.limit || scrollableElements.length < options.limit)) {
         if (isScrollable(element))
             scrollableElements.push(element);
         element = element.parentElement;
@@ -19,14 +21,16 @@ export const getScrollableParents = (element: Element | null | undefined) => {
     return scrollableElements;
 }
 
+export const getScrollableParent = (element: Element | null | undefined) => getScrollableParents(element, { limit: 1 })[0];
+
 export const useParentScrolled = (ref: React.MutableRefObject<HTMLElement | undefined>, handler: (e: Event) => void) => {
     React.useEffect(() => {
-        const scrollables = getScrollableParents(ref.current);
-        for (const scrollable of scrollables)
-            scrollable.addEventListener('scroll', handler);
+        const scrollable = getScrollableParent(ref.current);
+        if (!scrollable) return;
+
+        scrollable.addEventListener('scroll', handler);
         return () => {
-            for (const scrollable of scrollables)
-                scrollable.removeEventListener('scroll', handler);
+            scrollable.removeEventListener('scroll', handler);
         }
-    });
+    }, [handler]);
 }
