@@ -80,13 +80,14 @@ export const List = styled('div') <ListProps>`
   height: 100%;
   justify-self: start;
 
-  padding-right: 86px;
+  // Add right padding of one column, so there's a nice gap between pages.
+  padding-right: var(--grid-column-width);
   
   display: grid;
   align-items: normal;
   justify-content: var(--ntp-item-justify, start);
 
-  grid-template-columns: repeat(6, 86px);
+  grid-template-columns: repeat(var(--grid-columns), var(--grid-column-width));
   grid-auto-flow: row;
 
   scroll-snap-align: start;
@@ -96,6 +97,17 @@ export const PagesContainer = styled('div') <{}>`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  --grid-columns: 6;
+  --grid-column-width: 86px;
+
+  @media screen and (max-width: 700px) {
+    --grid-columns: 3;
+  }
+
+  @media screen and (max-width: 390px) {
+    --grid-columns: 2;
+  }
 `
 
 export const ListPageButtonContainer = styled('div')<{}>`
