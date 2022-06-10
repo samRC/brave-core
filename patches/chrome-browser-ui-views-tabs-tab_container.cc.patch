@@ -1,0 +1,38 @@
+diff --git a/chrome/browser/ui/views/tabs/tab_container.cc b/chrome/browser/ui/views/tabs/tab_container.cc
+index 0cabdf4e4608153e3e01a4f06e8c989ba5de98e6..427549f856c6681eb6c1ee15c1232a0b509d6c45 100644
+--- a/chrome/browser/ui/views/tabs/tab_container.cc
++++ b/chrome/browser/ui/views/tabs/tab_container.cc
+@@ -327,6 +327,8 @@ TabContainer::TabContainer(TabStripController* controller,
+     g_drop_indicator_width = drop_image->width();
+     g_drop_indicator_height = drop_image->height();
+   }
++
++  BRAVE_UI_VIEWS_TABS_TAB_CONTAINER_SET_HELPER_TO_USE_VERTICAL_LAYOUT
+ }
+ 
+ TabContainer::~TabContainer() {
+@@ -753,6 +755,8 @@ gfx::Size TabContainer::GetMinimumSize() const {
+ }
+ 
+ gfx::Size TabContainer::CalculatePreferredSize() const {
++  BRAVE_UI_VIEWS_TABS_TAB_CONTAINER_CALCULATE_PREFERRED_SIZE_FOR_VERT_TABS
++
+   int preferred_width;
+   // The tab container needs to always exactly fit the bounds of the tabs so
+   // that NTB can be laid out just to the right of the rightmost tab. When the
+@@ -1119,6 +1123,7 @@ void TabContainer::StartRemoveTabAnimation(Tab* tab, int former_model_index) {
+   // Compute the target bounds for animating this tab closed.  The tab's left
+   // edge should stay joined to the right edge of the previous tab, if any.
+   gfx::Rect target_bounds = tab->bounds();
++  BRAVE_UI_VIEWS_TABS_TAB_CONTAINER_OVERRIDE_TARGET_BOUNDS_FOR_VERTICAL_TABS
+   target_bounds.set_x(
+       (former_model_index > 0)
+           ? (tabs_view_model_.ideal_bounds(former_model_index - 1).right() -
+@@ -1190,6 +1195,7 @@ void TabContainer::UpdateClosingModeOnRemovedTab(int model_index,
+       size_delta = next_active_tab->width();
+     }
+ 
++    BRAVE_UI_VIEWS_TABS_TAB_CONTAINER_SKIP_IF_VERTICAL_TABS
+     override_available_width_for_tabs_ =
+         tabs_view_model_.ideal_bounds(model_count).right() - size_delta +
+         tab_overlap;

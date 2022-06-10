@@ -1,0 +1,12 @@
+diff --git a/chrome/browser/ui/views/frame/browser_view_layout.cc b/chrome/browser/ui/views/frame/browser_view_layout.cc
+index 1db5f517e7bfbd13e129011f5383fd0842578e62..0faf1c4f06e28f15c2c49cec16653c96d9d93362 100644
+--- a/chrome/browser/ui/views/frame/browser_view_layout.cc
++++ b/chrome/browser/ui/views/frame/browser_view_layout.cc
+@@ -430,6 +430,7 @@ gfx::Size BrowserViewLayout::GetPreferredSize(const views::View* host) const {
+ 
+ int BrowserViewLayout::LayoutTabStripRegion(int top) {
+   TRACE_EVENT0("ui", "BrowserViewLayout::LayoutTabStripRegion");
++  BRAVE_SKIP_IF_VERTICAL_TAB
+   if (!delegate_->IsTabStripVisible()) {
+     SetViewVisibility(tab_strip_region_view_, false);
+     tab_strip_region_view_->SetBounds(0, 0, 0, 0);

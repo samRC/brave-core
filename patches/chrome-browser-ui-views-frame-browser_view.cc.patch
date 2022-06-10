@@ -1,0 +1,13 @@
+diff --git a/chrome/browser/ui/views/frame/browser_view.cc b/chrome/browser/ui/views/frame/browser_view.cc
+index dadd1e5ac9dcde5b08e32885f629174e96e02085..d5421a5ac2abf01e0f049a8c8d1d5230dbd9d306 100644
+--- a/chrome/browser/ui/views/frame/browser_view.cc
++++ b/chrome/browser/ui/views/frame/browser_view.cc
+@@ -1103,6 +1103,8 @@ bool BrowserView::GetTabStripVisible() const {
+     return false;
+ #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+ 
++  BRAVE_BROWSER_UI_VIEWS_FRAME_HIDE_HORIZONTAL_TAB
++
+   // Return false if the tabstrip has not yet been created (by InitViews()),
+   // since callers may otherwise try to access it. Note that we can't just check
+   // this alone, as the tabstrip is created unconditionally even for windows

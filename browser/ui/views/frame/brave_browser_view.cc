@@ -12,6 +12,7 @@
 #include "brave/browser/ui/brave_browser.h"
 #include "brave/browser/ui/views/brave_actions/brave_actions_container.h"
 #include "brave/browser/ui/views/brave_actions/brave_shields_action_view.h"
+#include "brave/browser/ui/views/frame/brave_tab_strip_region_container.h"
 #include "brave/browser/ui/views/location_bar/brave_location_bar_view.h"
 #include "brave/browser/ui/views/toolbar/bookmark_button.h"
 #include "brave/browser/ui/views/toolbar/brave_toolbar_view.h"
@@ -159,34 +160,47 @@ BraveBrowserView::BraveBrowserView(std::unique_ptr<Browser> browser)
                           base::Unretained(this)));
 #endif
 
+  const bool can_have_vertical_tabs = browser_->is_type_normal();
+  bool need_to_wrap_contents_container = can_have_vertical_tabs;
 #if BUILDFLAG(ENABLE_SIDEBAR)
   // Only normal window (tabbed) should have sidebar.
-  if (!sidebar::CanUseSidebar(browser_.get())) {
+  need_to_wrap_contents_container =
+      need_to_wrap_contents_container || sidebar::CanUseSidebar(browser_.get());
+#endif  // BUILDFLAG(ENABLE_SIDEBAR)
+
+  if (!need_to_wrap_contents_container)
     return;
-  }
 
   auto brave_contents_container = std::make_unique<views::View>();
 
   // Wrap |contents_container_| within our new |brave_contents_container_|.
   // |brave_contents_container_| also contains sidebar.
   auto orignal_contents_container = RemoveChildViewT(contents_container_.get());
+
+#if BUILDFLAG(ENABLE_SIDEBAR)
   sidebar_container_view_ = brave_contents_container->AddChildView(
       std::make_unique<SidebarContainerView>(GetBraveBrowser()));
+#endif  // BUILDFLAG(ENABLE_SIDEBAR)
+  vertical_tabs_container_ = brave_contents_container->AddChildView(
+      std::make_unique<BraveTabStripRegionContainer>(tab_strip_region_view_));
   original_contents_container_ = brave_contents_container->AddChildView(
       std::move(orignal_contents_container));
+
   brave_contents_container->SetLayoutManager(
       std::make_unique<BraveContentsLayoutManager>(
-          sidebar_container_view_, original_contents_container_));
+          sidebar_container_view_, vertical_tabs_container_,
+          original_contents_container_));
   contents_container_ = AddChildView(std::move(brave_contents_container));
   set_contents_view(contents_container_);
 
+#if BUILDFLAG(ENABLE_SIDEBAR)
   sidebar_host_view_ = AddChildView(std::make_unique<views::View>());
+#endif  // BUILDFLAG(ENABLE_SIDEBAR)
 
   // Make sure |find_bar_host_view_| is the last child of BrowserView by
   // re-ordering. FindBarHost widgets uses this view as a  kHostViewKey.
   // See the comments of BrowserView::find_bar_host_view().
   ReorderChildView(find_bar_host_view_, -1);
-#endif
 }
 
 void BraveBrowserView::OnPreferenceChanged(const std::string& pref_name) {
