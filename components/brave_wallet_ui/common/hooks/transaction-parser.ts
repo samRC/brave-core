@@ -256,14 +256,14 @@ export function useTransactionParser (
 
     const value =
       isSPLTransaction ? solTxData?.amount.toString() ?? ''
-      : isSolTransaction ? solTxData?.lamports.toString() ?? ''
-      : isFilTransaction ? filTxData.value || ''
-      : txData?.baseData.value || ''
+        : isSolTransaction ? solTxData?.lamports.toString() ?? ''
+          : isFilTransaction ? filTxData.value || ''
+            : txData?.baseData.value || ''
 
     let to =
       isSolTransaction ? solTxData?.toWalletAddress ?? ''
-      : isFilTransaction ? filTxData.to ?? ''
-      : txData?.baseData.to || ''
+        : isFilTransaction ? filTxData.to ?? ''
+          : txData?.baseData.to || ''
 
     const nonce = txData?.baseData.nonce || ''
     const account = accounts.find((account) => account.address.toLowerCase() === fromAddress.toLowerCase())
@@ -325,6 +325,11 @@ export function useTransactionParser (
               }
 
               return acc
+            }
+            case 'Unknown': {
+              if (!to) {
+                to = solTxData?.instructions[0].accountMetas[0].pubkey.toString() ?? ''
+              }
             }
             default: return acc.plus(lamportsAmount)
           }
