@@ -72,11 +72,7 @@ export const AddSiteTile = styled('button') <AddSiteTileProps>`
   }
 `
 
-export interface ListProps {
-  blockNumber: number
-}
-
-export const List = styled('div') <ListProps>`
+export const List = styled('div')`
   height: 100%;
   justify-self: start;
 
@@ -93,7 +89,7 @@ export const List = styled('div') <ListProps>`
   scroll-snap-align: start;
 `
 
-export const PagesContainer = styled('div') <{}>`
+export const PagesContainer = styled('div')`
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -37,7 +37,7 @@ function TopSitesPage(props: Props & { maxGridSize: number, page: number }) {
   const start = props.page * props.maxGridSize;
   const items = props.gridSites.slice(start, start + props.maxGridSize);
   const { active } = useDndContext();
-  return <List blockNumber={props.maxGridSize}>
+  return <List>
     {items.map((siteData) => (
       <GridSiteTile
         key={siteData.id}
