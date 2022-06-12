@@ -90,6 +90,8 @@ export const List = styled('div')`
 `
 
 export const PagesContainer = styled('div')`
+  max-width: 100vw;
+
   display: flex;
   flex-direction: column;
   align-items: center;
