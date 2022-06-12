@@ -1,4 +1,5 @@
 import * as React from "react";
+import { forwardRef, useCallback } from "react";
 import styled from "styled-components";
 
 function PageIndicator() {
@@ -23,10 +24,18 @@ const StyledButton = styled('button')`
     height: var(--list-page-button-size);
 `;
 
-export default function GridPageButton(props: { page: number, pageContainerRef: React.MutableRefObject<HTMLDivElement | undefined> }) {
-    const updatePage = React.useCallback(() => {
-        props.pageContainerRef.current?.children[props.page].scrollIntoView({ behavior: 'smooth' });
-    }, [props.page, props.pageContainerRef]);
+interface GridPageButtonProps {
+    page: number;
+    pageContainerRef: React.MutableRefObject<HTMLDivElement | undefined>;
+}
+
+export default function GridPageButton(props: GridPageButtonProps) {
+    const updatePage = useCallback(() => props
+        .pageContainerRef
+        .current
+        ?.children[props.page]
+        .scrollIntoView({ behavior: 'smooth' }),
+        [props.page, props.pageContainerRef]);
 
     return <StyledButton onClick={updatePage}>
         <PageIndicator />
@@ -43,7 +52,7 @@ export const GridPageIndicatorContainer = styled('div') <{}>`
   height: var(--list-page-button-size);
 `;
 
-export const GridPageIndicator = React.forwardRef<HTMLDivElement>((props, ref) =>
+export const GridPageIndicator = forwardRef<HTMLDivElement>((props, ref) =>
     <GridPageIndicatorContainer ref={ref}>
         <PageIndicator />
     </GridPageIndicatorContainer>);

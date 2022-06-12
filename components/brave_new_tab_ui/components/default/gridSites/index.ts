@@ -20,7 +20,7 @@ export const TileTitle = styled('p') <{}>`
   text-overflow: ellipsis;
 `
 
-export const AddSiteTileImage = styled('div') <{}>`
+export const AddSiteTileImage = styled('div')<{}>`
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(8px);
   border-radius: 8px;
@@ -40,7 +40,7 @@ export interface AddSiteTileProps {
   isDragging: boolean
 }
 
-export const AddSiteTile = styled('button') <AddSiteTileProps>`
+export const AddSiteTile = styled('button')<AddSiteTileProps>`
   background: transparent;
   width: 78px;
   height: 110px;
@@ -80,7 +80,6 @@ export const List = styled('div')`
   padding-right: var(--grid-column-width);
   
   display: grid;
-  align-items: normal;
   justify-content: var(--ntp-item-justify, start);
 
   grid-template-columns: repeat(var(--grid-columns), var(--grid-column-width));
@@ -198,7 +197,7 @@ export const TileMenuItem = styled('button') <{}>`
   }
 `
 
-export const TileAction = styled('button') <{}>`
+export const TileAction = styled('button')<{}>`
   -webkit-appearance: none;
   box-sizing: border-box;
   transition: color 0.1s linear;
