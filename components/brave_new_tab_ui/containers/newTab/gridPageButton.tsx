@@ -1,6 +1,12 @@
 import * as React from "react";
 import styled from "styled-components";
 
+function PageIndicator() {
+    return <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="50" />
+    </svg>
+}
+
 const StyledButton = styled('button')`
     all: unset;
 
@@ -16,12 +22,6 @@ const StyledButton = styled('button')`
     width: var(--list-page-button-size);
     height: var(--list-page-button-size);
 `;
-
-function PageIndicator() {
-    return <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="50" cy="50" r="50" />
-    </svg>
-}
 
 export default function GridPageButton(props: { page: number, pageContainerRef: React.MutableRefObject<HTMLDivElement | undefined> }) {
     const updatePage = React.useCallback(() => {

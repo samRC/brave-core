@@ -12,9 +12,8 @@ import * as gridSitesActions from '../../actions/grid_sites_actions';
 // Types
 import * as newTabActions from '../../actions/new_tab_actions';
 // Feature-specific components
-import { List, ListPageButtonContainer, PagesContainer } from '../../components/default/gridSites';
-import GridPageButton, { GridPageIndicator } from '../../components/default/gridSites/gridPageButton';
-import { GridPagesContainer } from '../../components/default/gridSites/gridPagesContainer';
+import { List, ListPageButtonContainer, PagesContainer, GridPagesContainer } from '../../components/default/gridSites';
+import GridPageButton, { GridPageIndicator } from './gridPageButton'
 import createWidget from '../../components/default/widget';
 // Constants
 import { MAX_GRID_SIZE } from '../../constants/new_tab_ui';
