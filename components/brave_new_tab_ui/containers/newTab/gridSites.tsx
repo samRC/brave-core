@@ -17,12 +17,12 @@ import createWidget from '../../components/default/widget';
 // Constants
 import { MAX_GRID_SIZE } from '../../constants/new_tab_ui';
 import AddSiteTile from './addSiteTile';
-import { GridPageButtons } from './gridPageButton';
+import { GridPageButtons } from './gridPageButtons';
 // Component groups
 import GridSiteTile from './gridTile';
 import { TopSiteDragOverlay } from './gridTileOverlay';
 
-const MAX_PAGES = 3;
+const MAX_PAGES = 4;
 const activationConstraint: PointerActivationConstraint = { distance: 2 };
 const autoScrollOptions: AutoScrollOptions = { interval: 500 };
 
