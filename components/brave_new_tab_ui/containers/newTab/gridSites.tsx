@@ -23,6 +23,7 @@ import AddSiteTile from './addSiteTile';
 import GridSiteTile from './gridTile';
 import { TopSiteDragOverlay } from './gridTileOverlay';
 
+const MAX_PAGES = 3;
 const activationConstraint: PointerActivationConstraint = { distance: 2 };
 const autoScrollOptions: AutoScrollOptions = { interval: 500 };
 
@@ -65,7 +66,7 @@ function TopSitesList(props: Props) {
   const gridPagesContainerRef = useRef<HTMLDivElement>();
 
   const numSites = customLinksEnabled ? gridSites.length + 1 : gridSites.length;
-  const pageCount = Math.ceil(numSites / maxGridSize);
+  const pageCount = Math.min(MAX_PAGES, Math.ceil(numSites / maxGridSize));
   const pages = [...Array(pageCount).keys()];
 
   const indicatorRef = useRef<HTMLDivElement>();
