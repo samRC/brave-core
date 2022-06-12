@@ -67,6 +67,11 @@ export const GridPageButtons = (props: { numPages: number, pageContainerRef: Rea
 
         const scrollHandler = () => {
             const percent = 100 * (el.scrollLeft) / (el.scrollWidth - el.clientWidth);
+
+            // This is so we take into account the gaps between the icons:
+            // Page two for: * * * * is the 3rd slot
+            //                 ^
+            //               1234567
             const translationX = percent * (props.numPages - 1) * 2;
             indicatorRef.current?.setAttribute('style', `transform: translateX(${translationX}%)`)
         };
