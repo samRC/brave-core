@@ -12,12 +12,12 @@ import * as gridSitesActions from '../../actions/grid_sites_actions';
 // Types
 import * as newTabActions from '../../actions/new_tab_actions';
 // Feature-specific components
-import { List, PagesContainer, GridPagesContainer } from '../../components/default/gridSites';
-import { GridPageButton, GridPageIndicator, ListPageButtonContainer } from './gridPageButton'
+import { GridPagesContainer, List, PagesContainer } from '../../components/default/gridSites';
 import createWidget from '../../components/default/widget';
 // Constants
 import { MAX_GRID_SIZE } from '../../constants/new_tab_ui';
 import AddSiteTile from './addSiteTile';
+import { GridPageButtons } from './gridPageButton';
 // Component groups
 import GridSiteTile from './gridTile';
 import { TopSiteDragOverlay } from './gridTileOverlay';
@@ -68,16 +68,6 @@ function TopSitesList(props: Props) {
   const pageCount = Math.min(MAX_PAGES, Math.ceil(numSites / maxGridSize));
   const pages = [...Array(pageCount).keys()];
 
-  const indicatorRef = useRef<HTMLDivElement>();
-  const scrollHandler = useCallback(() => {
-    const el = gridPagesContainerRef.current;
-    if (!el) return;
-
-    const percent = 100 * (el.scrollLeft) / (el.scrollWidth - el.clientWidth);
-    const translationX = percent * (pageCount - 1) * 2;
-    indicatorRef.current?.setAttribute('style', `transform: translateX(${translationX}%)`)
-  }, [pageCount]);
-
   const onSortEnd = useCallback((e: DragEndEvent) => {
     e.activatorEvent.preventDefault();
 
@@ -99,7 +89,7 @@ function TopSitesList(props: Props) {
   const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
 
   return <PagesContainer>
-    <GridPagesContainer customLinksEnabled={customLinksEnabled} ref={gridPagesContainerRef as any} onScroll={scrollHandler}>
+    <GridPagesContainer customLinksEnabled={customLinksEnabled} ref={gridPagesContainerRef as any}>
       <DndContext onDragEnd={onSortEnd} autoScroll={autoScrollOptions} sensors={sensors}>
         <SortableContext items={gridSites}>
           {pages.map(page => <TopSitesPage key={page} page={page} maxGridSize={maxGridSize} {...props} />)}
@@ -107,13 +97,7 @@ function TopSitesList(props: Props) {
         </SortableContext>
       </DndContext>
     </GridPagesContainer>
-    {customLinksEnabled && <ListPageButtonContainer>
-      {pages.map(page => <GridPageButton
-        key={page}
-        page={page}
-        pageContainerRef={gridPagesContainerRef} />)}
-      <GridPageIndicator ref={indicatorRef as any} />
-    </ListPageButtonContainer>}
+    {customLinksEnabled && <GridPageButtons numPages={pageCount} pageContainerRef={gridPagesContainerRef}/>}
   </PagesContainer>;
 }
 
