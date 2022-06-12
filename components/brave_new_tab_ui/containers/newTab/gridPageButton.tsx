@@ -2,6 +2,14 @@ import * as React from "react";
 import { forwardRef, useCallback } from "react";
 import styled from "styled-components";
 
+export const ListPageButtonContainer = styled('div')<{}>`
+  display: flex;
+  flex-direction: row;
+
+  --list-page-button-size: 8px;
+  gap: var(--list-page-button-size);
+`
+
 function PageIndicator() {
     return <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <circle cx="50" cy="50" r="50" />
@@ -29,7 +37,7 @@ interface GridPageButtonProps {
     pageContainerRef: React.MutableRefObject<HTMLDivElement | undefined>;
 }
 
-export default function GridPageButton(props: GridPageButtonProps) {
+export function GridPageButton(props: GridPageButtonProps) {
     const updatePage = useCallback(() => props
         .pageContainerRef
         .current

@@ -81,9 +81,7 @@ export const List = styled('div')`
   
   display: grid;
   justify-content: var(--ntp-item-justify, start);
-
   grid-template-columns: repeat(var(--grid-columns), var(--grid-column-width));
-  grid-auto-flow: row;
 
   scroll-snap-align: start;
 `
@@ -126,14 +124,6 @@ export const GridPagesContainer = styled('div') <{ customLinksEnabled: boolean }
   ::-webkit-scrollbar {
     display: none;
   }
-`
-
-export const ListPageButtonContainer = styled('div')<{}>`
-  display: flex;
-  flex-direction: row;
-
-  --list-page-button-size: 8px;
-  gap: var(--list-page-button-size);
 `
 
 export const TileActionsContainer = styled('nav') <{}>`
