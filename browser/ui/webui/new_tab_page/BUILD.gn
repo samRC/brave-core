@@ -10,15 +10,18 @@ source_set("unit_tests") {
     sources = [
       "brave_new_tab_message_handler_unittest.cc",
       "brave_new_tab_ui_unittest.cc",
+      "ntp_background_pref_unittest.cc",
     ]
 
     deps = [
       "//base",
       "//base/test:test_support",
       "//brave/browser/ui",
+      "//brave/components/constants",
       "//chrome/browser",
       "//components/history/core/browser",
       "//components/ntp_tiles",
+      "//components/sync_preferences:test_support",
       "//testing/gtest",
     ]
   }
