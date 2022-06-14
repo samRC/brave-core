@@ -161,12 +161,8 @@ constexpr inline auto kCollectedHistograms =
 
 namespace brave::p3a {
 
-std::vector<
-    std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>>
-RegisterMetricObservers(base::StatisticsRecorder::OnSampleCallback callback) {
-  std::vector<
-      std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>>
-      callbacks;
+MetricObserverList RegisterMetricObservers(MetricObserverCallback callback) {
+  MetricObserverList callbacks;
   callbacks.reserve(kCollectedHistograms.size());
 
   for (base::StringPiece histogram_name : kCollectedHistograms) {
