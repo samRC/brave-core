@@ -31,10 +31,11 @@ constexpr char kImageSourceHost[] = "erc-token-images";
 constexpr char kWyreID[] = "AC_MGNVBGHPA9T";
 constexpr char kWyreBuyUrl[] =
     "https://pay.sendwyre.com/?dest=ethereum:%s"
-    "&destCurrency=%s&amount=%s&accountId=%s&paymentMethod=debit-card";
+    "&sourceCurrency=%s&destCurrency=%s&amount=%s&accountId=%s&paymentMethod="
+    "debit-card";
 constexpr char kRampBuyUrl[] =
     "https://buy.ramp.network/"
-    "?userAddress=%s&swapAsset=%s&fiatValue=%s&fiatCurrency=USD&hostApiKey=%s";
+    "?userAddress=%s&swapAsset=%s&fiatValue=%s&fiatCurrency=%s&hostApiKey=%s";
 constexpr char kRampID[] = "8yxja8782as5essk2myz3bmh4az6gpq4nte9n2gf";
 
 constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -618,7 +619,9 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"braveWalletNetworkFilterAll", IDS_BRAVE_WALLET_NETWORK_FILTER_ALL},
     {"braveWalletEditGasLimitError", IDS_BRAVE_WALLET_EDIT_GAS_LIMIT_ERROR},
     {"braveWalletNetworkFilterSecondary",
-     IDS_BRAVE_WALLET_NETWORK_FILTER_SECONDARY}};
+     IDS_BRAVE_WALLET_NETWORK_FILTER_SECONDARY},
+    {"braveWalletSelectCurrency", IDS_BRAVE_WALLET_SELECT_CURRENCY},
+    {"braveWalletSearchCurrency", IDS_BRAVE_WALLET_SEARCH_CURRENCY}};
 
 // Swap constants
 constexpr char kRopstenSwapBaseAPIURL[] = "https://ropsten.api.0x.org/";
@@ -656,6 +659,7 @@ constexpr char kSolanaPrefKey[] = "solana";
 
 const std::vector<mojom::BlockchainToken>& GetWyreBuyTokens();
 const std::vector<mojom::BlockchainToken>& GetRampBuyTokens();
+const std::vector<mojom::OnRampCurrency>& GetOnRampCurrenciesList();
 
 }  // namespace brave_wallet
 
