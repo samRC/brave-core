@@ -10,7 +10,7 @@
 
 class BraveShortcutsProvider : public ShortcutsProvider {
  public:
-  explicit BraveShortcutsProvider(AutocompleteProviderClient* client);
+  using ShortcutsProvider::ShortcutsProvider;
 
   BraveShortcutsProvider(const BraveShortcutsProvider&) = delete;
   BraveShortcutsProvider& operator=(const BraveShortcutsProvider&) = delete;

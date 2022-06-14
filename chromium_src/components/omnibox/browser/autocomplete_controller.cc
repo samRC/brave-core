@@ -7,6 +7,7 @@
 #include "brave/components/omnibox/browser/brave_history_quick_provider.h"
 #include "brave/components/omnibox/browser/brave_history_url_provider.h"
 #include "brave/components/omnibox/browser/brave_search_provider.h"
+#include "brave/components/omnibox/browser/brave_shortcuts_provider.h"
 #include "brave/components/omnibox/browser/suggested_sites_provider.h"
 #include "brave/components/omnibox/browser/topsites_provider.h"
 #include "components/omnibox/browser/clipboard_provider.h"

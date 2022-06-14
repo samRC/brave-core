@@ -4,6 +4,7 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "brave/components/omnibox/browser/brave_history_url_provider.h"
+
 #include "brave/components/omnibox/browser/brave_omnibox_prefs.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
