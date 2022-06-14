@@ -104,7 +104,7 @@ TEST_F(BraveHistoryURLProviderTest, NoResultsWhenHistoryDisabled) {
 
   autocomplete_->Start(CreateAutocompleteInput("Example"), false);
   if (!autocomplete_->done())
-    base::RunLoop().Run();
+    base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(autocomplete_->matches().empty());
 }
 
@@ -113,7 +113,7 @@ TEST_F(BraveHistoryURLProviderTest, ResultsWhenHistorySuggestionsEnabled) {
 
   autocomplete_->Start(CreateAutocompleteInput("Example"), false);
   if (!autocomplete_->done())
-    base::RunLoop().Run();
+    base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(autocomplete_->matches().empty());
 }
 
@@ -123,6 +123,6 @@ TEST_F(BraveHistoryURLProviderTest, URLResultsWhenHistoryDisabled) {
   autocomplete_->Start(CreateAutocompleteInput("https://unvisited-url.com/"),
                        false);
   if (!autocomplete_->done())
-    base::RunLoop().Run();
+    base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(autocomplete_->matches().empty());
 }
