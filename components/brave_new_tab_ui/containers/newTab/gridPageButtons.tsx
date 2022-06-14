@@ -1,6 +1,6 @@
-import * as React from "react";
-import { useCallback, useRef, useEffect } from "react";
-import styled from "styled-components";
+import * as React from 'react'
+import { useCallback, useRef, useEffect } from 'react'
+import styled from 'styled-components'
 
 const PageIndicator = <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <circle cx="50" cy="50" r="50" />
@@ -28,26 +28,25 @@ const StyledButton = styled('button')`
 
     width: var(--list-page-button-size);
     height: var(--list-page-button-size);
-`;
+`
 
 interface GridPageButtonProps {
-    page: number;
-    pageContainerRef: React.MutableRefObject<HTMLDivElement | undefined>;
+    page: number
+    pageContainerRef: React.MutableRefObject<HTMLDivElement | undefined>
 }
 
-function GridPageButton(props: GridPageButtonProps) {
+function GridPageButton (props: GridPageButtonProps) {
     const updatePage = useCallback(() => props
         .pageContainerRef
         .current
         ?.children[props.page]
         .scrollIntoView({ behavior: 'smooth' }),
-        [props.page, props.pageContainerRef]);
+        [props.page, props.pageContainerRef])
 
     return <StyledButton onClick={updatePage}>
         {PageIndicator}
     </StyledButton>
 }
-
 
 const GridPageIndicatorContainer = styled('div') <{}>`
   position: absolute;
@@ -55,30 +54,30 @@ const GridPageIndicatorContainer = styled('div') <{}>`
 
   width: var(--list-page-button-size);
   height: var(--list-page-button-size);
-`;
+`
 
 export const GridPageButtons = (props: { numPages: number, pageContainerRef: React.MutableRefObject<HTMLDivElement | undefined> }) => {
-    const pages = [...Array(props.numPages).keys()];
-    const indicatorRef = useRef<HTMLDivElement>();
+    const pages = [...Array(props.numPages).keys()]
+    const indicatorRef = useRef<HTMLDivElement>()
 
     useEffect(() => {
-        const el = props.pageContainerRef.current;
-        if (!el) return;
+        const el = props.pageContainerRef.current
+        if (!el) return
 
         const scrollHandler = () => {
-            const percent = 100 * (el.scrollLeft) / (el.scrollWidth - el.clientWidth);
+            const percent = 100 * (el.scrollLeft) / (el.scrollWidth - el.clientWidth)
 
             // This is so we take into account the gaps between the icons:
             // Page two for: * * * * is the 3rd slot
             //                 ^
             //               1234567
-            const translationX = percent * (props.numPages - 1) * 2;
+            const translationX = percent * (props.numPages - 1) * 2
             indicatorRef.current?.setAttribute('style', `transform: translateX(${translationX}%)`)
-        };
-        el.addEventListener('scroll', scrollHandler);
+        }
+        el.addEventListener('scroll', scrollHandler)
 
-        return () => el.removeEventListener('scroll', scrollHandler);
-    }, [props.pageContainerRef, props.numPages]);
+        return () => el.removeEventListener('scroll', scrollHandler)
+    }, [props.pageContainerRef, props.numPages])
 
     return <ListPageButtonContainer>
         {pages.map(page => <GridPageButton

@@ -32,20 +32,20 @@ interface Props {
   onShowEditTopSite: (targetTopSiteForEditing?: NewTab.Site) => void
 }
 
-function generateGridSiteFavicon(site: NewTab.Site): string {
+function generateGridSiteFavicon (site: NewTab.Site): string {
   if (site.favicon === '') {
     return `chrome://favicon/size/64@1x/${site.url}`
   }
   return site.favicon
 }
 
-export function SiteTile(props: { site: NewTab.Site, isMenuShowing?: boolean, children?: React.ReactNode, draggable?: ReturnType<typeof useSortable> }) {
-  const { site, isMenuShowing, children, draggable } = props;
+export function SiteTile (props: { site: NewTab.Site, isMenuShowing?: boolean, children?: React.ReactNode, draggable?: ReturnType<typeof useSortable> }) {
+  const { site, isMenuShowing, children, draggable } = props
   const style = useMemo(() => ({
     transform: CSS.Transform.toString(draggable?.transform || null),
     transition: draggable?.transition,
     opacity: draggable?.isDragging ? 0 : 1
-  }), [draggable]);
+  }), [draggable])
 
   return <Tile
     ref={draggable?.setNodeRef} {...draggable?.attributes} {...draggable?.listeners}
@@ -60,78 +60,74 @@ export function SiteTile(props: { site: NewTab.Site, isMenuShowing?: boolean, ch
   </Tile>
 }
 
-function TopSite(props: Props) {
-  const { siteData, disabled } = props;
+function TopSite (props: Props) {
+  const { siteData, disabled } = props
 
-  const tileMenuRef = useRef<any>();
-  const sortable = useSortable({ id: siteData.id, disabled });
-  const [showMenu, setShowMenu] = useState(false);
+  const tileMenuRef = useRef<any>()
+  const sortable = useSortable({ id: siteData.id, disabled })
+  const [showMenu, setShowMenu] = useState(false)
 
   const handleClickOutside = useCallback((e: Event) => {
-    if (!tileMenuRef.current || tileMenuRef.current.contains(e.target))
-      return;
-    setShowMenu(false);
-  }, []);
+    if (!tileMenuRef.current || tileMenuRef.current.contains(e.target)) { return }
+    setShowMenu(false)
+  }, [])
 
   const handleMoveOutside = useCallback((e: Event) => {
-    if (!tileMenuRef.current || tileMenuRef.current.contains(e.target))
-      return;
-    setShowMenu(false);
-  }, []);
+    if (!tileMenuRef.current || tileMenuRef.current.contains(e.target)) { return }
+    setShowMenu(false)
+  }, [])
 
   const onKeyPressSettings = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Escape')
-      setShowMenu(false);
-  }, []);
+    if (e.key === 'Escape') { setShowMenu(false) }
+  }, [])
 
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('mouseMove', handleMoveOutside);
-    document.addEventListener('keydown', onKeyPressSettings);
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('mouseMove', handleMoveOutside)
+    document.addEventListener('keydown', onKeyPressSettings)
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('mousemove', handleMoveOutside);
-      document.removeEventListener('keydown', onKeyPressSettings);
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('mousemove', handleMoveOutside)
+      document.removeEventListener('keydown', onKeyPressSettings)
     }
-  }, [handleClickOutside, handleMoveOutside, onKeyPressSettings]);
+  }, [handleClickOutside, handleMoveOutside, onKeyPressSettings])
 
   const onShowTileMenu = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    setShowMenu(true);
-  }, []);
+    e.preventDefault()
+    setShowMenu(true)
+  }, [])
 
   const onIgnoredTopSite = useCallback((site: NewTab.Site, e: React.MouseEvent) => {
-    e.preventDefault();
-    setShowMenu(false);
-    props.actions.tileRemoved(site.url);
-  }, [props.actions.tileRemoved]);
+    e.preventDefault()
+    setShowMenu(false)
+    props.actions.tileRemoved(site.url)
+  }, [props.actions.tileRemoved])
 
   const onEditTopSite = useCallback((site: NewTab.Site, e: React.MouseEvent) => {
-    e.preventDefault();
-    setShowMenu(false);
+    e.preventDefault()
+    setShowMenu(false)
     props.onShowEditTopSite(site)
-  }, [props.onShowEditTopSite]);
+  }, [props.onShowEditTopSite])
 
-  const editMenuRef = useRef<HTMLElement>();
-  const [scrollableParent] = getScrollableParents(editMenuRef.current);
+  const editMenuRef = useRef<HTMLElement>()
+  const [scrollableParent] = getScrollableParents(editMenuRef.current)
 
-  // Work out the style for the edit menu. Because it's rendered as a child of 
+  // Work out the style for the edit menu. Because it's rendered as a child of
   // the scrollable container we need to subtract the scrollable containers
   // position to get the menu to align nicely with the child.
   const editMenuStyle = (() => {
-    const bounds = editMenuRef.current?.getBoundingClientRect();
-    const scrollableBounds = scrollableParent?.getBoundingClientRect();
-    if (!bounds || !scrollableBounds) return;
+    const bounds = editMenuRef.current?.getBoundingClientRect()
+    const scrollableBounds = scrollableParent?.getBoundingClientRect()
+    if (!bounds || !scrollableBounds) return
     return {
       top: bounds.bottom - scrollableBounds.y,
-      left: bounds.right - scrollableBounds.x,
-    };
-  })();
+      left: bounds.right - scrollableBounds.x
+    }
+  })()
 
   useParentScrolled(editMenuRef, () => {
-    setShowMenu(false);
-  });
-
+    setShowMenu(false)
+  })
 
   return <SiteTile site={props.siteData} draggable={sortable} isMenuShowing={showMenu}>
     {!siteData.defaultSRTopSite
@@ -155,4 +151,3 @@ function TopSite(props: Props) {
 }
 
 export default TopSite
-
