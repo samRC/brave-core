@@ -3,9 +3,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef BRAVE_COMPONENTS_P3A_METRIC_NAMES_H_
-#define BRAVE_COMPONENTS_P3A_METRIC_NAMES_H_
-
 #include "brave/components/p3a/metric_names.h"
 
 #include <memory>
@@ -181,5 +178,3 @@ bool IsValidMetric(base::StringPiece histogram_name) {
 }
 
 }  // namespace brave::p3a
-
-#endif  // BRAVE_COMPONENTS_P3A_METRIC_NAMES_H_
