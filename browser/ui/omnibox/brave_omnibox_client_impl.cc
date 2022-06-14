@@ -5,15 +5,13 @@
 
 #include "brave/browser/ui/omnibox/brave_omnibox_client_impl.h"
 
-#include <algorithm>
-
-#include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "brave/browser/autocomplete/brave_autocomplete_scheme_classifier.h"
 #include "brave/components/brave_search_conversion/p3a.h"
 #include "brave/components/brave_search_conversion/utils.h"
 #include "brave/components/constants/pref_names.h"
 #include "brave/components/omnibox/browser/promotion_utils.h"
+#include "brave/components/p3a_utils/bucket.h"
 #include "brave/components/time_period_storage/weekly_storage.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -50,12 +48,9 @@ bool IsSearchEvent(const AutocompleteMatch& match) {
 }
 
 void RecordSearchEventP3A(uint64_t number_of_searches) {
-  constexpr int kIntervals[] = {0, 5, 10, 20, 50, 100, 500};
-  const int* it =
-      std::lower_bound(kIntervals, std::end(kIntervals), number_of_searches);
-  const int answer = it - kIntervals;
-  UMA_HISTOGRAM_EXACT_LINEAR("Brave.Omnibox.SearchCount", answer,
-                             std::size(kIntervals));
+  p3a_utils::RecordToHistogramBucket("Brave.Omnibox.SearchCount",
+                                     {0, 5, 10, 20, 50, 100, 500},
+                                     number_of_searches);
 }
 
 }  // namespace
