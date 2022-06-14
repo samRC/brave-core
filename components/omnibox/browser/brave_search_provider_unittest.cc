@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -98,7 +99,7 @@ class BraveSearchProviderTest : public testing::Test {
 
     turl_model->Load();
 
-    // // Reset the default TemplateURL.
+    // Reset the default TemplateURL.
     TemplateURLData data;
     data.SetShortName(u"t");
     data.SetURL(search_url);
@@ -119,12 +120,11 @@ class BraveSearchProviderTest : public testing::Test {
 
     client_ =
         std::make_unique<ChromeAutocompleteProviderClient>(profile_.get());
-    provider_ = new BraveSearchProvider(client_.get(), nullptr);
+    provider_ =
+        base::MakeRefCounted<BraveSearchProvider>(client_.get(), nullptr);
   }
 
   void TearDown() override {
-    base::RunLoop().RunUntilIdle();
-
     // Shutdown the provider before the profile.
     provider_ = nullptr;
   }
@@ -141,11 +141,10 @@ class BraveSearchProviderTest : public testing::Test {
         TemplateURLRef::SearchTermsArgs(term),
         TemplateURLServiceFactory::GetForProfile(profile_.get())
             ->search_terms_data()));
-    static base::Time last_added_time;
-    last_added_time =
-        std::max(base::Time::Now(), last_added_time + base::Microseconds(1));
+    last_added_time_ =
+        std::max(base::Time::Now(), last_added_time_ + base::Microseconds(1));
     history->AddPageWithDetails(search, std::u16string(), visit_count,
-                                visit_count, last_added_time, false,
+                                visit_count, last_added_time_, false,
                                 history::SOURCE_BROWSED);
     history->SetKeywordSearchTermsForURL(search, t_url->id(), term);
     return search;
@@ -154,10 +153,9 @@ class BraveSearchProviderTest : public testing::Test {
   // Looks for a match in |provider_| with destination |url|.  Sets |match| to
   // it if found.  Returns whether |match| was set.
   bool FindMatchWithDestination(const GURL& url, AutocompleteMatch* match) {
-    for (auto i = provider_->matches().begin(); i != provider_->matches().end();
-         ++i) {
-      if (i->destination_url == url) {
-        *match = *i;
+    for (const auto& i : provider_->matches()) {
+      if (i.destination_url == url) {
+        *match = i;
         return true;
       }
     }
@@ -175,8 +173,7 @@ class BraveSearchProviderTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
 
     profile_->BlockUntilHistoryProcessesPendingRequests();
-    if (!wyt_match)
-      return;
+    DCHECK(wyt_match);
     ASSERT_GE(provider_->matches().size(), 1u);
     EXPECT_TRUE(FindMatchWithDestination(
         GURL(default_t_url_->url_ref().ReplaceSearchTerms(
@@ -187,6 +184,7 @@ class BraveSearchProviderTest : public testing::Test {
         wyt_match));
   }
 
+  base::Time last_added_time_;
   raw_ptr<TemplateURL> default_t_url_ = nullptr;
 
   content::BrowserTaskEnvironment task_environment_;

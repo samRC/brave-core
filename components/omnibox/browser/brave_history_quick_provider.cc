@@ -11,10 +11,6 @@
 #include "components/omnibox/browser/history_quick_provider.h"
 #include "components/prefs/pref_service.h"
 
-BraveHistoryQuickProvider::BraveHistoryQuickProvider(
-    AutocompleteProviderClient* client)
-    : HistoryQuickProvider(client) {}
-
 BraveHistoryQuickProvider::~BraveHistoryQuickProvider() = default;
 
 void BraveHistoryQuickProvider::Start(const AutocompleteInput& input,

@@ -10,8 +10,7 @@
 
 class BraveSearchProvider : public SearchProvider {
  public:
-  BraveSearchProvider(AutocompleteProviderClient* client,
-                      AutocompleteProviderListener* listener);
+  using SearchProvider::SearchProvider;
   BraveSearchProvider(const BraveSearchProvider&) = delete;
   BraveSearchProvider& operator=(const BraveSearchProvider&) = delete;
 

@@ -10,7 +10,7 @@
 
 class BraveHistoryQuickProvider : public HistoryQuickProvider {
  public:
-  explicit BraveHistoryQuickProvider(AutocompleteProviderClient* client);
+  using HistoryQuickProvider::HistoryQuickProvider;
   BraveHistoryQuickProvider(const BraveHistoryQuickProvider&) = delete;
   BraveHistoryQuickProvider& operator=(const BraveHistoryQuickProvider&) =
       delete;

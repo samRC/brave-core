@@ -71,7 +71,7 @@ class BraveHistoryURLProviderTest : public testing::Test,
   // AutocompleteProviderListener:
   void OnProviderUpdate(bool updated_matches) override {
     if (autocomplete_->done())
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+        base::RunLoop::QuitCurrentWhenIdleDeprecated();
   }
 
  protected:
@@ -81,7 +81,6 @@ class BraveHistoryURLProviderTest : public testing::Test,
   void TearDown() override {
     autocomplete_ = nullptr;
     client_.reset();
-    task_environment_.RunUntilIdle();
   }
 
   // Does the real setup.

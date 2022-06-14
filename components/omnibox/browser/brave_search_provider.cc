@@ -11,10 +11,6 @@
 #include "components/omnibox/browser/search_provider.h"
 #include "components/prefs/pref_service.h"
 
-BraveSearchProvider::BraveSearchProvider(AutocompleteProviderClient* provider,
-                                         AutocompleteProviderListener* listener)
-    : SearchProvider(provider, listener) {}
-
 BraveSearchProvider::~BraveSearchProvider() = default;
 
 void BraveSearchProvider::DoHistoryQuery(bool minimal_changes) {

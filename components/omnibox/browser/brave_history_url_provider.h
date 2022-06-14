@@ -10,8 +10,7 @@
 
 class BraveHistoryURLProvider : public HistoryURLProvider {
  public:
-  BraveHistoryURLProvider(AutocompleteProviderClient* client,
-                          AutocompleteProviderListener* listener);
+  using HistoryURLProvider::HistoryURLProvider;
   BraveHistoryURLProvider(const BraveHistoryURLProvider&) = delete;
   BraveHistoryURLProvider& operator=(const BraveHistoryURLProvider&) = delete;
 

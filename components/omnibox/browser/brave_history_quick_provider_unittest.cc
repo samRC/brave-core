@@ -61,9 +61,7 @@ class GetURLTask : public history::HistoryDBTask {
     return true;
   }
 
-  void DoneRunOnMainThread() override {
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
-  }
+  void DoneRunOnMainThread() override { base::RunLoop().RunUntilIdle(); }
 
  private:
   ~GetURLTask() override {}
@@ -134,13 +132,12 @@ class BraveHistoryQuickProviderTest : public testing::Test {
     history::BlockUntilHistoryProcessesPendingRequests(
         client_->GetHistoryService());
 
-    provider_ = new BraveHistoryQuickProvider(client_.get());
+    provider_ = base::MakeRefCounted<BraveHistoryQuickProvider>(client_.get());
   }
 
   void TearDown() override {
     provider_ = nullptr;
     client_.reset();
-    task_environment_.RunUntilIdle();
   }
 
   // Fills test data into the history system.

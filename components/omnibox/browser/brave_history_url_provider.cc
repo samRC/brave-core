@@ -8,11 +8,6 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
 
-BraveHistoryURLProvider::BraveHistoryURLProvider(
-    AutocompleteProviderClient* client,
-    AutocompleteProviderListener* listener)
-    : HistoryURLProvider(client, listener) {}
-
 BraveHistoryURLProvider::~BraveHistoryURLProvider() = default;
 
 void BraveHistoryURLProvider::Start(const AutocompleteInput& input,

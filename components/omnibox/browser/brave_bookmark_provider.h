@@ -10,7 +10,7 @@
 
 class BraveBookmarkProvider : public BookmarkProvider {
  public:
-  explicit BraveBookmarkProvider(AutocompleteProviderClient* client);
+  using BookmarkProvider::BookmarkProvider;
   BraveBookmarkProvider(const BraveBookmarkProvider&) = delete;
   BraveBookmarkProvider& operator=(const BraveBookmarkProvider&) = delete;
 

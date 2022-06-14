@@ -9,9 +9,6 @@
 #include "components/omnibox/browser/bookmark_provider.h"
 #include "components/prefs/pref_service.h"
 
-BraveBookmarkProvider::BraveBookmarkProvider(AutocompleteProviderClient* client)
-    : BookmarkProvider(client) {}
-
 BraveBookmarkProvider::~BraveBookmarkProvider() = default;
 
 void BraveBookmarkProvider::Start(const AutocompleteInput& input,
