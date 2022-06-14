@@ -54,7 +54,7 @@ class BraveHistoryURLProviderTest : public testing::Test,
   // AutocompleteProviderListener:
   void OnProviderUpdate(bool updated_matches) override {
     if (autocomplete_->done())
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+      run_loop_.QuitWhenIdle();
   }
 
  protected:
@@ -92,8 +92,10 @@ class BraveHistoryURLProviderTest : public testing::Test,
     return true;
   }
 
-  base::ScopedTempDir history_dir_;
   base::test::TaskEnvironment task_environment_;
+
+  base::RunLoop run_loop_;
+  base::ScopedTempDir history_dir_;
   ACMatches matches_;
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   scoped_refptr<BraveHistoryURLProvider> autocomplete_;
@@ -104,7 +106,7 @@ TEST_F(BraveHistoryURLProviderTest, NoResultsWhenHistoryDisabled) {
 
   autocomplete_->Start(CreateAutocompleteInput("Example"), false);
   if (!autocomplete_->done())
-    base::RunLoop().RunUntilIdle();
+    run_loop_.Run();
   EXPECT_TRUE(autocomplete_->matches().empty());
 }
 
@@ -113,7 +115,7 @@ TEST_F(BraveHistoryURLProviderTest, ResultsWhenHistorySuggestionsEnabled) {
 
   autocomplete_->Start(CreateAutocompleteInput("Example"), false);
   if (!autocomplete_->done())
-    base::RunLoop().RunUntilIdle();
+    run_loop_.Run();
   EXPECT_FALSE(autocomplete_->matches().empty());
 }
 
@@ -123,6 +125,6 @@ TEST_F(BraveHistoryURLProviderTest, URLResultsWhenHistoryDisabled) {
   autocomplete_->Start(CreateAutocompleteInput("https://unvisited-url.com/"),
                        false);
   if (!autocomplete_->done())
-    base::RunLoop().RunUntilIdle();
+    run_loop_.Run();
   EXPECT_FALSE(autocomplete_->matches().empty());
 }
