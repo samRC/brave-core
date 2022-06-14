@@ -9,7 +9,7 @@
 class BraveHistoryQuickProviderTest;
 
 #define ClearPrivateData                        \
-  ClearPrivateDataUnused(); \
+  ClearPrivateDataUnused();                     \
   friend class ::BraveHistoryQuickProviderTest; \
   void ClearPrivateData
 

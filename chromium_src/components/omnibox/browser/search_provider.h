@@ -7,7 +7,7 @@
 #define BRAVE_CHROMIUM_SRC_COMPONENTS_OMNIBOX_BROWSER_SEARCH_PROVIDER_H_
 
 #define DoHistoryQuery                  \
-  DoHistoryQueryUnused();          \
+  DoHistoryQueryUnused();               \
   friend class BraveSearchProvider;     \
   friend class BraveSearchProviderTest; \
   virtual void DoHistoryQuery

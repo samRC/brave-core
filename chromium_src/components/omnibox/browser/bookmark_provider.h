@@ -7,7 +7,7 @@
 #define BRAVE_CHROMIUM_SRC_COMPONENTS_OMNIBOX_BROWSER_BOOKMARK_PROVIDER_H_
 
 #define DoAutocomplete                \
-  DoAutocompleteUnused();        \
+  DoAutocompleteUnused();             \
   friend class BraveBookmarkProvider; \
   void DoAutocomplete
 
