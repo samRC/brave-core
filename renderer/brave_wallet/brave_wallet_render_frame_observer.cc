@@ -13,6 +13,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/blink.h"
 
 namespace brave_wallet {
 
@@ -47,6 +48,7 @@ void BraveWalletRenderFrameObserver::DidCreateScriptContext(
   }
 
   // Wallet provider objects won't be generated for third party iframe
+  v8::Isolate* isolate = blink::MainThreadIsolate();
   if ((!render_frame()->IsMainFrame() &&
        render_frame()->GetWebFrame()->IsCrossOriginToOutermostMainFrame()) ||
       !render_frame()->GetWebFrame()->GetDocument().IsSecureContext()) {
@@ -54,19 +56,22 @@ void BraveWalletRenderFrameObserver::DidCreateScriptContext(
   }
 
   bool is_main_world = world_id == content::ISOLATED_WORLD_ID_GLOBAL;
-  if (!js_ethereum_provider_) {
-    js_ethereum_provider_.reset(new JSEthereumProvider(
-        render_frame(), dynamic_params.brave_use_native_wallet));
+  if (render_frame()->GetWebFrame()->GetDocument().IsDOMFeaturePolicyEnabled(isolate->GetCurrentContext(), "ethereum")) {
+    if (!js_ethereum_provider_) {
+      js_ethereum_provider_.reset(new JSEthereumProvider(
+          render_frame(), dynamic_params.brave_use_native_wallet));
+    }
+    js_ethereum_provider_->AddJavaScriptObjectToFrame(
+        context, dynamic_params.allow_overwrite_window_web3_provider,
+        is_main_world);
+    js_ethereum_provider_->ConnectEvent();
   }
-  js_ethereum_provider_->AddJavaScriptObjectToFrame(
-      context, dynamic_params.allow_overwrite_window_web3_provider,
-      is_main_world);
-  js_ethereum_provider_->ConnectEvent();
 
   if (base::FeatureList::IsEnabled(
           brave_wallet::features::kBraveWalletSolanaFeature) &&
       base::FeatureList::IsEnabled(
-          brave_wallet::features::kBraveWalletSolanaProviderFeature)) {
+          brave_wallet::features::kBraveWalletSolanaProviderFeature) &&
+      render_frame()->GetWebFrame()->GetDocument().IsDOMFeaturePolicyEnabled(isolate->GetCurrentContext(), "solana")) {
     JSSolanaProvider::Install(
         dynamic_params.allow_overwrite_window_web3_provider, is_main_world,
         render_frame(), context);
