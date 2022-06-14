@@ -12,36 +12,19 @@
 #include <utility>
 
 #include "base/run_loop.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "brave/components/omnibox/browser/brave_history_quick_provider.h"
 #include "brave/components/omnibox/browser/brave_omnibox_prefs.h"
-#include "build/build_config.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/history/core/browser/url_database.h"
 #include "components/history/core/test/history_service_test_util.h"
-#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
-#include "components/omnibox/browser/autocomplete_result.h"
-#include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
+#include "components/omnibox/browser/history_quick_provider.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
-#include "components/omnibox/browser/verbatim_match.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/search_engines/default_search_manager.h"
-#include "components/search_engines/omnibox_focus_type.h"
-#include "components/search_engines/template_url.h"
-#include "components/search_engines/template_url_service.h"
-#include "components/url_formatter/url_fixer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
@@ -71,7 +54,7 @@ class BraveHistoryURLProviderTest : public testing::Test,
   // AutocompleteProviderListener:
   void OnProviderUpdate(bool updated_matches) override {
     if (autocomplete_->done())
-        base::RunLoop::QuitCurrentWhenIdleDeprecated();
+      base::RunLoop::QuitCurrentWhenIdleDeprecated();
   }
 
  protected:

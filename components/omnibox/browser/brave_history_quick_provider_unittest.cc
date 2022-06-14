@@ -14,10 +14,8 @@
 #include <string>
 #include <vector>
 
-#include "base/format_macros.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "brave/components/omnibox/browser/brave_omnibox_prefs.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -26,23 +24,13 @@
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/history/core/browser/history_service_observer.h"
-#include "components/history/core/browser/url_database.h"
 #include "components/history/core/test/history_service_test_util.h"
-#include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/history_test_util.h"
-#include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/in_memory_url_index_test_util.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/omnibox_focus_type.h"
-#include "components/search_engines/search_terms_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using base::ASCIIToUTF16;
 
 namespace {
 
