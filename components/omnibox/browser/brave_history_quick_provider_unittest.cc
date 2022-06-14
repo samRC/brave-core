@@ -189,11 +189,11 @@ class BraveHistoryQuickProviderTest : public testing::Test {
     // were expected.
     std::set<std::string> leftovers;
     if (duplicates_ok) {
-      for (auto match : ac_matches_)
+      for (const auto& match : ac_matches_)
         leftovers.insert(match.destination_url.spec());
-      for (auto expected : expected_urls)
+      for (const auto& expected : expected_urls)
         EXPECT_EQ(1U, leftovers.count(expected)) << "Expected URL " << expected;
-      for (auto expected : expected_urls)
+      for (const auto& expected : expected_urls)
         leftovers.erase(expected);
     } else {
       leftovers = for_each(expected_urls.begin(), expected_urls.end(),
@@ -258,8 +258,8 @@ class BraveHistoryQuickProviderTest : public testing::Test {
 
 BraveHistoryQuickProviderTest::SetShouldContain::SetShouldContain(
     const ACMatches& matched_urls) {
-  for (auto iter = matched_urls.begin(); iter != matched_urls.end(); ++iter)
-    matches_.insert(iter->destination_url.spec());
+  for (const auto& iter : matched_urls)
+    matches_.insert(iter.destination_url.spec());
 }
 
 void BraveHistoryQuickProviderTest::SetShouldContain::operator()(
