@@ -23,6 +23,12 @@ void RecordFeatureUsage(PrefService* prefs,
                         const char* first_use_time_pref_name,
                         const char* last_use_time_pref_name);
 
+void MaybeRecordFeatureExistingUsageTimestamp(
+    PrefService* prefs,
+    const char* first_use_time_pref_name,
+    const char* last_use_time_pref_name,
+    base::Time external_last_use_timestamp);
+
 void RecordFeatureNewUserReturning(PrefService* prefs,
                                    const char* first_use_time_pref_name,
                                    const char* last_use_time_pref_name,
