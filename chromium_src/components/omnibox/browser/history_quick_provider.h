@@ -7,9 +7,9 @@
 #define BRAVE_CHROMIUM_SRC_COMPONENTS_OMNIBOX_BROWSER_HISTORY_QUICK_PROVIDER_H_
 
 #define DoAutocomplete                    \
-  DoAutocomplete();                       \
+  DoAutocompleteUnused();            \
   friend class BraveHistoryQuickProvider; \
-  void DoAutocompleteUnused
+  void DoAutocomplete
 
 #include "src/components/omnibox/browser/history_quick_provider.h"
 

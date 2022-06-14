@@ -6,11 +6,11 @@
 #ifndef BRAVE_CHROMIUM_SRC_COMPONENTS_OMNIBOX_BROWSER_SEARCH_PROVIDER_H_
 #define BRAVE_CHROMIUM_SRC_COMPONENTS_OMNIBOX_BROWSER_SEARCH_PROVIDER_H_
 
-#define DoHistoryQuery                          \
-  virtual DoHistoryQuery(bool minimal_changes); \
-  friend class BraveSearchProvider;             \
-  friend class BraveSearchProviderTest;         \
-  void DoHistoryQueryUnused
+#define DoHistoryQuery                  \
+  DoHistoryQueryUnused();          \
+  friend class BraveSearchProvider;     \
+  friend class BraveSearchProviderTest; \
+  virtual void DoHistoryQuery
 
 #include "src/components/omnibox/browser/search_provider.h"
 

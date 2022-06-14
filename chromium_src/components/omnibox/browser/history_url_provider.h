@@ -6,11 +6,10 @@
 #ifndef BRAVE_CHROMIUM_SRC_COMPONENTS_OMNIBOX_BROWSER_HISTORY_URL_PROVIDER_H_
 #define BRAVE_CHROMIUM_SRC_COMPONENTS_OMNIBOX_BROWSER_HISTORY_URL_PROVIDER_H_
 
-#define DoAutocomplete                                                       \
-  DoAutocomplete(history::HistoryBackend* backend, history::URLDatabase* db, \
-                 HistoryURLProviderParams* params);                          \
-  friend class BraveHistoryURLProvider;                                      \
-  void DoAutocompleteUnused
+#define DoAutocomplete                  \
+  DoAutocompleteUnused();          \
+  friend class BraveHistoryURLProvider; \
+  void DoAutocomplete
 
 #include "src/components/omnibox/browser/history_url_provider.h"
 

@@ -7,9 +7,9 @@
 #define BRAVE_CHROMIUM_SRC_COMPONENTS_OMNIBOX_BROWSER_SHORTCUTS_BACKEND_H_
 
 #define InitInternal                       \
-  InitInternal();                          \
+  InitInternalUnused();                    \
   friend class BraveShortcutsProviderTest; \
-  void InitInternalUnused
+  void InitInternal
 
 #include "src/components/omnibox/browser/shortcuts_backend.h"
 

@@ -6,10 +6,10 @@
 #ifndef BRAVE_CHROMIUM_SRC_COMPONENTS_OMNIBOX_BROWSER_BOOKMARK_PROVIDER_H_
 #define BRAVE_CHROMIUM_SRC_COMPONENTS_OMNIBOX_BROWSER_BOOKMARK_PROVIDER_H_
 
-#define DoAutocomplete                            \
-  DoAutocomplete(const AutocompleteInput& input); \
-  friend class BraveBookmarkProvider;             \
-  void DoAutocompleteUnused
+#define DoAutocomplete                \
+  DoAutocompleteUnused();        \
+  friend class BraveBookmarkProvider; \
+  void DoAutocomplete
 
 #include "src/components/omnibox/browser/bookmark_provider.h"
 

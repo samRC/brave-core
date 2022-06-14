@@ -6,10 +6,10 @@
 #ifndef BRAVE_CHROMIUM_SRC_COMPONENTS_OMNIBOX_BROWSER_SHORTCUTS_PROVIDER_H_
 #define BRAVE_CHROMIUM_SRC_COMPONENTS_OMNIBOX_BROWSER_SHORTCUTS_PROVIDER_H_
 
-#define GetMatches                            \
-  GetMatches(const AutocompleteInput& input); \
-  friend class BraveShortcutsProvider;        \
-  void GetMatchesUnused
+#define GetMatches                     \
+  GetMatchesUnused();                  \
+  friend class BraveShortcutsProvider; \
+  void GetMatches
 
 #include "src/components/omnibox/browser/shortcuts_provider.h"
 

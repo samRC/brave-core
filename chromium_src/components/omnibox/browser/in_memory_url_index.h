@@ -9,9 +9,9 @@
 class BraveHistoryQuickProviderTest;
 
 #define ClearPrivateData                        \
-  ClearPrivateData();                           \
+  ClearPrivateDataUnused(); \
   friend class ::BraveHistoryQuickProviderTest; \
-  void ClearPrivateDataUnused
+  void ClearPrivateData
 
 #include "src/components/omnibox/browser/in_memory_url_index.h"
 
