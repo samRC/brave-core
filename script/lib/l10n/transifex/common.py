@@ -59,8 +59,6 @@ def transifex_name_from_filename(source_file_path, filename):
         return 'brave_extension'
     if 'brave_rewards' in source_file_path:
         return 'rewards_extension'
-    if 'ethereum-remote-client/app' in source_file_path:
-        return 'ethereum_remote_client_extension'
     assert False, ('JSON files should be mapped explicitly, this '
                    f'one is not: {source_file_path}')
 
@@ -114,18 +112,10 @@ def get_acceptable_json_lang_codes(langs_dir_path):
     # Source language for Brave locales
     lang_codes.discard('en_US')
 
-    # Source language for ethereum-remote-client
-    lang_codes.discard('en')
-
     # Files that are not locales
     lang_codes.discard('.DS_Store')
     lang_codes.discard('index.json')
 
-    # ethereum-remote-client has these unsupported locales
-    lang_codes.discard('tml')
-    lang_codes.discard('hn')
-    lang_codes.discard('ph')
-    lang_codes.discard('ht')
     return sorted(lang_codes)
 
 
