@@ -113,8 +113,9 @@ base::Value::Dict GetPreferencesDictionary(PrefService* prefs) {
 
 base::Value::Dict GetPrivatePropertiesDictionary(PrefService* prefs) {
   base::Value::Dict private_data;
-  private_data.Set("useAlternativePrivateSearchEngine",
-                   prefs->GetBoolean(kUseAlternativeSearchEngineProvider));
+  private_data.Set(
+      "useAlternativePrivateSearchEngine",
+      prefs->GetBoolean(kUseAlternativePrivateSearchEngineProvider));
   private_data.Set(
       "showAlternativePrivateSearchEngineToggle",
       prefs->GetBoolean(kShowAlternativePrivateSearchEngineProviderToggle));
