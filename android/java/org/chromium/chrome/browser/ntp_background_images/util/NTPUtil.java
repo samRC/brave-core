@@ -136,70 +136,6 @@ public class NTPUtil {
         return correction;
     }
 
-    public static void updateOrientedUI(
-            Context context, ViewGroup view, Point size, NTPImage ntpImage, int height) {
-        LinearLayout parentLayout = (LinearLayout)view.findViewById(R.id.parent_layout);
-        CompositorViewHolder compositorView = view.findViewById(R.id.compositor_view_holder);
-        ViewGroup imageCreditLayout = view.findViewById(R.id.image_credit_layout);
-        ViewGroup newsRecyclerLayout = view.findViewById(R.id.newsRecycler);
-        ViewGroup optinLayout = view.findViewById(R.id.optin_layout_id);
-
-        ViewGroup mainLayout = view.findViewById(R.id.ntp_main_layout);
-        ImageView sponsoredLogo = (ImageView)view.findViewById(R.id.sponsored_logo);
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(dpToPx(context, 170), dpToPx(context, 170));
-
-        parentLayout.removeView(mainLayout);
-        parentLayout.removeView(imageCreditLayout);
-        parentLayout.removeView(optinLayout);
-        parentLayout.removeView(newsRecyclerLayout);
-
-        parentLayout.addView(mainLayout);
-        parentLayout.addView(imageCreditLayout);
-        if (optinLayout != null) {
-            parentLayout.addView(optinLayout);
-        }
-
-        if (newsRecyclerLayout != null) {
-            parentLayout.addView(newsRecyclerLayout);
-        }
-
-        int widgetCompensation = dpToPx(context, 140);
-
-        LinearLayout.LayoutParams mainLayoutLayoutParams =
-                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
-        mainLayoutLayoutParams.weight = 1f;
-        mainLayout.setLayoutParams(mainLayoutLayoutParams);
-
-        LinearLayout.LayoutParams imageCreditLayoutParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-        if (ChromeFeatureList.isEnabled(BraveFeatureList.BRAVE_NEWS)) {
-            int topMargin = correctImageCreditLayoutTopPosition(ntpImage, height);
-            imageCreditLayoutParams.setMargins(0, topMargin, 0, 10);
-
-            View feedSpinner = (View) view.findViewById(R.id.feed_spinner);
-            FrameLayout.LayoutParams feedSpinnerParams =
-                    (FrameLayout.LayoutParams) feedSpinner.getLayoutParams();
-            feedSpinnerParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-            feedSpinnerParams.setMargins(0, 0, 0, dpToPx(context, 35));
-            if (feedSpinner != null) {
-                feedSpinner.setLayoutParams(feedSpinnerParams);
-            }
-
-            layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-
-        } else {
-            layoutParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-            layoutParams.setMargins(0, 0, 0, dpToPx(context, 5));
-        }
-
-        parentLayout.setOrientation(LinearLayout.VERTICAL);
-
-        imageCreditLayout.setLayoutParams(imageCreditLayoutParams);
-
-        sponsoredLogo.setLayoutParams(layoutParams);
-    }
-
     public static int checkForNonDisruptiveBanner(NTPImage ntpImage, SponsoredTab sponsoredTab) {
         Context context = ContextUtils.getApplicationContext();
         if(sponsoredTab.shouldShowBanner()) {
@@ -217,7 +153,6 @@ public class NTPUtil {
     }
 
     public static void showBREBottomBanner(View view) {
-        Log.e("tapan","showBREBottomBanner");
         Context context = ContextUtils.getApplicationContext();
         if (!PackageUtils.isFirstInstall(context)
                 && BraveAdsNativeHelper.nativeIsBraveAdsEnabled(Profile.getLastUsedRegularProfile())
@@ -247,7 +182,6 @@ public class NTPUtil {
                 }
             });
         }
-        Log.e("tapan","showBREBottomBanner done");
     }
 
     public static void showNonDisruptiveBanner(ChromeActivity chromeActivity, View view, int ntpType, SponsoredTab sponsoredTab, NewTabPageListener newTabPageListener) {
@@ -584,5 +518,10 @@ public class NTPUtil {
         NTPBackgroundImagesBridge mNTPBackgroundImagesBridge = NTPBackgroundImagesBridge.getInstance(mProfile);
         boolean isReferralEnabled = UserPrefs.get(Profile.getLastUsedRegularProfile()).getInteger(BravePref.NEW_TAB_PAGE_SUPER_REFERRAL_THEMES_OPTION) == 1 ? true : false;
         return mNTPBackgroundImagesBridge.isSuperReferral() && isReferralEnabled;
+    }
+
+    public static int getViewHeight(View view) {
+        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        return view.getMeasuredHeight();
     }
 }

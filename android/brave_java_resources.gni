@@ -844,7 +844,6 @@ brave_java_resources = [
   "java/res/layout/brave_news_card_menu.xml",
   "java/res/layout/brave_news_load_new_content.xml",
   "java/res/layout/brave_news_row.xml",
-  "java/res/layout/brave_news_settings_bar_layout.xml",
   "java/res/layout/brave_onboarding_searchbox.xml",
   "java/res/layout/brave_permission_prompt_dialog.xml",
   "java/res/layout/brave_rewards_auto_contrib.xml",

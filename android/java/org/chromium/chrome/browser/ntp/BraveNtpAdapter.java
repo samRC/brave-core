@@ -5,95 +5,110 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import static org.chromium.ui.base.ViewUtils.dpToPx;
+
 import android.app.Activity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.LayoutInflater;
-import android.widget.TextView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.util.Pair;
-import android.os.Build;
-import android.graphics.Bitmap;
-import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.os.Build;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import androidx.core.widget.ImageViewCompat;
-import android.content.res.ColorStateList;
+import android.util.Pair;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.RequestManager;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.brave_news.mojom.BraveNewsController;
 import org.chromium.chrome.R;
-import org.chromium.base.Log;
-import org.chromium.chrome.browser.app.BraveActivity;
 import org.chromium.chrome.browser.QRCodeShareDialogFragment;
-import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
-import org.chromium.chrome.browser.util.BraveConstants;
+import org.chromium.chrome.browser.app.BraveActivity;
 import org.chromium.chrome.browser.brave_news.BraveNewsUtils;
+import org.chromium.chrome.browser.brave_news.CardBuilderFeedCard;
 import org.chromium.chrome.browser.brave_news.models.FeedItemsCard;
 import org.chromium.chrome.browser.brave_stats.BraveStatsUtil;
-import org.chromium.chrome.browser.ntp_background_images.util.NTPUtil;
-import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.chrome.browser.preferences.BravePref;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ntp_background_images.model.SponsoredTab;
-import org.chromium.chrome.browser.ntp_background_images.model.BackgroundImage;
+import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.ntp_background_images.NTPBackgroundImagesBridge;
+import org.chromium.chrome.browser.ntp_background_images.model.BackgroundImage;
 import org.chromium.chrome.browser.ntp_background_images.model.NTPImage;
+import org.chromium.chrome.browser.ntp_background_images.model.SponsoredTab;
 import org.chromium.chrome.browser.ntp_background_images.model.Wallpaper;
-import org.chromium.chrome.browser.util.TabUtils;
+import org.chromium.chrome.browser.ntp_background_images.util.NTPUtil;
+import org.chromium.chrome.browser.preferences.BravePref;
 import org.chromium.chrome.browser.preferences.BravePrefServiceBridge;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.BraveNewsPreferences;
+import org.chromium.chrome.browser.util.BraveConstants;
+import org.chromium.chrome.browser.util.TabUtils;
+import org.chromium.components.user_prefs.UserPrefs;
 
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public class BraveNtpAdapter
-        extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
-    private Activity activity;
-    private RequestManager glide;
-    private BraveNewsController braveNewsController;
-    private View siteSectionView;
-    private CopyOnWriteArrayList<FeedItemsCard> newsItems;
-    private NTPImage ntpImage;
-    private SponsoredTab sponsoredTab;
-    private Bitmap sponsoredLogo;
-    private Wallpaper wallpaper;
-    private NTPBackgroundImagesBridge nTPBackgroundImagesBridge;
+public class BraveNtpAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private Activity mActivity;
+    private RequestManager mGlide;
+    private BraveNewsController mBraveNewsController;
+    private View mSiteSectionView;
+    private CopyOnWriteArrayList<FeedItemsCard> mNewsItems;
+    private NTPImage mNtpImage;
+    private SponsoredTab mSponsoredTab;
+    private Bitmap mSponsoredLogo;
+    private Wallpaper mWallpaper;
+    private NTPBackgroundImagesBridge mNTPBackgroundImagesBridge;
+    private OnBraveNtpListener mOnBraveNtpListener;
+    private boolean mIsNewsLoading;
+    private boolean mIsNewContent;
+    private boolean mIsNewContentLoading;
+    private int mRecyclerViewHeight;
+    private int mStatsHeight;
+    private int mTopSitesHeight;
+    private int mNewContentHeight;
+    private int mTopMarginImageCredit;
+    private float mImageCreditAlpha = 1f;
 
     private static int TYPE_STATS = 1;
     private static int TYPE_TOP_SITES = 2;
-    private static int TYPE_IMAGE_CREDIT = 3;
-    private static int TYPE_NEWS_OPTIN = 4;
-    private static int TYPE_NEWS_LOADING = 5;
-    private static int TYPE_NEWS = 6;
+    private static int TYPE_NEW_CONTENT = 3;
+    private static int TYPE_IMAGE_CREDIT = 4;
+    private static int TYPE_NEWS_OPTIN = 5;
+    private static int TYPE_NEWS_LOADING = 6;
+    private static int TYPE_NEWS = 7;
 
-    public BraveNtpAdapter(Activity activity, RequestManager glide,
-                           CopyOnWriteArrayList<FeedItemsCard> newsItems,
-                           BraveNewsController braveNewsController, View siteSectionView, 
-                           NTPImage ntpImage, SponsoredTab sponsoredTab, Wallpaper wallpaper, 
-                           Bitmap sponsoredLogo, NTPBackgroundImagesBridge nTPBackgroundImagesBridge) {
-
-        this.activity = activity;
-        this.newsItems = newsItems;
-        this.braveNewsController = braveNewsController;
-        this.glide = glide;
-        this.siteSectionView = siteSectionView;
-        this.ntpImage = ntpImage;
-        this.sponsoredTab = sponsoredTab;
-        this.wallpaper = wallpaper;
-        this.sponsoredLogo = sponsoredLogo;
-        this.nTPBackgroundImagesBridge = nTPBackgroundImagesBridge;
+    public BraveNtpAdapter(Activity activity, OnBraveNtpListener onBraveNtpListener,
+            RequestManager glide, CopyOnWriteArrayList<FeedItemsCard> newsItems,
+            BraveNewsController braveNewsController, View siteSectionView, NTPImage ntpImage,
+            SponsoredTab sponsoredTab, Wallpaper wallpaper, Bitmap sponsoredLogo,
+            NTPBackgroundImagesBridge nTPBackgroundImagesBridge, boolean isNewsLoading,
+            int recyclerViewHeight) {
+        mActivity = activity;
+        mOnBraveNtpListener = onBraveNtpListener;
+        mGlide = glide;
+        mNewsItems = newsItems;
+        mBraveNewsController = braveNewsController;
+        mSiteSectionView = siteSectionView;
+        mNtpImage = ntpImage;
+        mSponsoredTab = sponsoredTab;
+        mWallpaper = wallpaper;
+        mSponsoredLogo = sponsoredLogo;
+        mNTPBackgroundImagesBridge = nTPBackgroundImagesBridge;
+        mIsNewsLoading = isNewsLoading;
+        mRecyclerViewHeight = recyclerViewHeight;
     }
 
     @Override
@@ -103,7 +118,7 @@ public class BraveNtpAdapter
 
             statsViewHolder.titleLayout.setVisibility(View.GONE);
             List<Pair<String, String>> statsPairs = BraveStatsUtil.getStatsPairs();
-            
+
             statsViewHolder.adsBlockedCountTv.setText(statsPairs.get(0).first);
             statsViewHolder.dataSavedValueTv.setText(statsPairs.get(1).first);
             statsViewHolder.estTimeSavedCountTv.setText(statsPairs.get(2).first);
@@ -111,119 +126,200 @@ public class BraveNtpAdapter
             statsViewHolder.dataSavedValueTextTv.setText(statsPairs.get(1).second);
             statsViewHolder.estTimeSavedCountTextTv.setText(statsPairs.get(2).second);
 
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            int margin = dpToPx(mActivity, 16);
+            layoutParams.setMargins(margin, margin, margin, 0);
+            statsViewHolder.ntpStatsLayout.setLayoutParams(layoutParams);
+
+            mStatsHeight = NTPUtil.getViewHeight(statsViewHolder.itemView) + margin;
+
         } else if (holder instanceof TopSitesViewHolder) {
-            siteSectionView.setBackgroundResource(R.drawable.rounded_dark_bg_alpha);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            int margin = dpToPx(mActivity, 16);
+            layoutParams.setMargins(margin, margin, margin, 0);
+
+            mSiteSectionView.setLayoutParams(layoutParams);
+            mSiteSectionView.setBackgroundResource(R.drawable.rounded_dark_bg_alpha);
+            mTopSitesHeight = NTPUtil.getViewHeight(holder.itemView) + margin;
+
+        } else if (holder instanceof NewContentViewHolder) {
+            NewContentViewHolder newContentViewHolder = (NewContentViewHolder) holder;
+
+            newContentViewHolder.newContentLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mOnBraveNtpListener.loadNewContent();
+                }
+            });
+
+            if (mIsNewContentLoading) {
+                newContentViewHolder.newContentLayout.setClickable(false);
+                newContentViewHolder.newContentText.setVisibility(View.GONE);
+                newContentViewHolder.newContentProgressBar.setVisibility(View.VISIBLE);
+            } else {
+                newContentViewHolder.newContentLayout.setClickable(true);
+                newContentViewHolder.newContentText.setVisibility(View.VISIBLE);
+                newContentViewHolder.newContentProgressBar.setVisibility(View.GONE);
+            }
+            mNewContentHeight =
+                    NTPUtil.getViewHeight(newContentViewHolder.itemView) + dpToPx(mActivity, 10);
 
         } else if (holder instanceof ImageCreditViewHolder) {
             ImageCreditViewHolder imageCreditViewHolder = (ImageCreditViewHolder) holder;
-            
-            if (ntpImage instanceof Wallpaper
-                && NTPUtil.isReferralEnabled()
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            
+
+            if (mNtpImage instanceof Wallpaper && NTPUtil.isReferralEnabled()
+                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 imageCreditViewHolder.superReferralLogo.setVisibility(View.VISIBLE);
                 imageCreditViewHolder.creditTv.setVisibility(View.GONE);
                 int floatingButtonIcon = R.drawable.ic_qr_code;
                 imageCreditViewHolder.superReferralLogo.setImageResource(floatingButtonIcon);
                 int floatingButtonIconColor =
-                    GlobalNightModeStateProviderHolder.getInstance().isInNightMode()
-                    ? android.R.color.white
-                    : android.R.color.black;
+                        GlobalNightModeStateProviderHolder.getInstance().isInNightMode()
+                        ? android.R.color.white
+                        : android.R.color.black;
                 ImageViewCompat.setImageTintList(imageCreditViewHolder.superReferralLogo,
-                    ColorStateList.valueOf(activity.getResources().getColor(floatingButtonIconColor)));
-                imageCreditViewHolder.superReferralLogo.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        QRCodeShareDialogFragment qRCodeShareDialogFragment =
-                            new QRCodeShareDialogFragment();
-                        qRCodeShareDialogFragment.setQRCodeText(
-                            BraveConstants.BRAVE_REF_URL + nTPBackgroundImagesBridge.getSuperReferralCode());
-                        qRCodeShareDialogFragment.show(
-                            ((BraveActivity) activity).getSupportFragmentManager(),
-                            "QRCodeShareDialogFragment");
-                    }
-                });
+                        ColorStateList.valueOf(
+                                mActivity.getResources().getColor(floatingButtonIconColor)));
+                imageCreditViewHolder.superReferralLogo.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                QRCodeShareDialogFragment qRCodeShareDialogFragment =
+                                        new QRCodeShareDialogFragment();
+                                qRCodeShareDialogFragment.setQRCodeText(BraveConstants.BRAVE_REF_URL
+                                        + mNTPBackgroundImagesBridge.getSuperReferralCode());
+                                qRCodeShareDialogFragment.show(
+                                        ((BraveActivity) mActivity).getSupportFragmentManager(),
+                                        "QRCodeShareDialogFragment");
+                            }
+                        });
 
-            } else if (UserPrefs.get(Profile.getLastUsedRegularProfile()).getBoolean(
-                       BravePref.NEW_TAB_PAGE_SHOW_BACKGROUND_IMAGE)
-                   && sponsoredTab != null
-                   && NTPUtil.shouldEnableNTPFeature()) {
-
-                if (ntpImage instanceof BackgroundImage) {
-                    BackgroundImage backgroundImage = (BackgroundImage) ntpImage;
+            } else if (UserPrefs.get(Profile.getLastUsedRegularProfile())
+                               .getBoolean(BravePref.NEW_TAB_PAGE_SHOW_BACKGROUND_IMAGE)
+                    && mSponsoredTab != null && NTPUtil.shouldEnableNTPFeature()) {
+                if (mNtpImage instanceof BackgroundImage) {
+                    BackgroundImage backgroundImage = (BackgroundImage) mNtpImage;
                     imageCreditViewHolder.sponsoredLogo.setVisibility(View.GONE);
                     imageCreditViewHolder.superReferralLogo.setVisibility(View.GONE);
 
                     if (backgroundImage.getImageCredit() != null) {
-                        String imageCreditStr = String.format(activity.getResources().getString(R.string.photo_by, backgroundImage.getImageCredit().getName()));
+                        String imageCreditStr = String.format(mActivity.getResources().getString(
+                                R.string.photo_by, backgroundImage.getImageCredit().getName()));
 
-                        SpannableStringBuilder spannableString = new SpannableStringBuilder(imageCreditStr);
+                        SpannableStringBuilder spannableString =
+                                new SpannableStringBuilder(imageCreditStr);
                         spannableString.setSpan(
-                            new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
-                            ((imageCreditStr.length() - 1)
-                            - (backgroundImage.getImageCredit().getName().length() - 1)),
-                            imageCreditStr.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
+                                ((imageCreditStr.length() - 1)
+                                        - (backgroundImage.getImageCredit().getName().length()
+                                                - 1)),
+                                imageCreditStr.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
                         imageCreditViewHolder.creditTv.setText(spannableString);
                         imageCreditViewHolder.creditTv.setVisibility(View.VISIBLE);
 
-                        imageCreditViewHolder.creditTv.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                if (backgroundImage.getImageCredit() != null) {
-                                    TabUtils.openUrlInSameTab(
-                                        backgroundImage.getImageCredit().getUrl());
-                                }
-                            }
-                        });
+                        imageCreditViewHolder.creditTv.setOnClickListener(
+                                new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        if (backgroundImage.getImageCredit() != null) {
+                                            TabUtils.openUrlInSameTab(
+                                                    backgroundImage.getImageCredit().getUrl());
+                                        }
+                                    }
+                                });
                     }
                 }
-            } 
-            if(!NTPUtil.isReferralEnabled() && sponsoredLogo!=null) {
+            }
+            if (!NTPUtil.isReferralEnabled() && mSponsoredLogo != null) {
                 imageCreditViewHolder.sponsoredLogo.setVisibility(View.VISIBLE);
-                imageCreditViewHolder.sponsoredLogo.setImageBitmap(sponsoredLogo);
+                imageCreditViewHolder.sponsoredLogo.setImageBitmap(mSponsoredLogo);
                 imageCreditViewHolder.sponsoredLogo.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (wallpaper.getLogoDestinationUrl() != null) {
-                            TabUtils.openUrlInSameTab(wallpaper.getLogoDestinationUrl());
-                            nTPBackgroundImagesBridge.wallpaperLogoClicked(wallpaper);
+                        if (mWallpaper.getLogoDestinationUrl() != null) {
+                            TabUtils.openUrlInSameTab(mWallpaper.getLogoDestinationUrl());
+                            mNTPBackgroundImagesBridge.wallpaperLogoClicked(mWallpaper);
                         }
                     }
                 });
             }
-        } else if(holder instanceof NewsOptinViewHolder) {
+
+            if (mRecyclerViewHeight > 0) {
+                LinearLayout.LayoutParams layoutParams =
+                        new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT);
+
+                int extraMarginForNews = (isNewsOptin() || shouldDisplayNewsLoading()
+                                                 || mOnBraveNtpListener.shouldDisplayNews())
+                        ? dpToPx(mActivity, 30)
+                        : 0;
+
+                mTopMarginImageCredit = mRecyclerViewHeight
+                        - NTPUtil.getViewHeight(imageCreditViewHolder.itemView)
+                        - extraMarginForNews;
+
+                if (isStatsEnabled()) {
+                    mTopMarginImageCredit -= mStatsHeight;
+                } else {
+                    mTopMarginImageCredit -= dpToPx(mActivity, 16);
+                }
+
+                if (isTopSitesEnabled()) {
+                    mTopMarginImageCredit -= mTopSitesHeight;
+                }
+
+                if (mIsNewContent) {
+                    mTopMarginImageCredit -= mNewContentHeight;
+                }
+
+                if (mTopMarginImageCredit < 0) {
+                    mTopMarginImageCredit = 0;
+                }
+
+                layoutParams.setMargins(0, mTopMarginImageCredit, 0, 0);
+
+                imageCreditViewHolder.ntpImageCreditLayout.setLayoutParams(layoutParams);
+            }
+
+            imageCreditViewHolder.imageCreditLayout.setAlpha(mImageCreditAlpha);
+
+        } else if (holder instanceof NewsOptinViewHolder) {
             NewsOptinViewHolder newsOptinViewHolder = (NewsOptinViewHolder) holder;
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            int margin = dpToPx(mActivity, 30);
+            layoutParams.setMargins(margin, 0, margin, margin);
+
+            newsOptinViewHolder.itemView.setLayoutParams(layoutParams);
 
             newsOptinViewHolder.optinClose.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
                     SharedPreferences sharedPreferences = ContextUtils.getAppSharedPreferences();
                     SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
                     sharedPreferencesEditor.putBoolean(BraveNewsPreferences.PREF_SHOW_OPTIN, false);
                     sharedPreferencesEditor.apply();
                     BravePrefServiceBridge.getInstance().setNewsOptIn(true);
                     BravePrefServiceBridge.getInstance().setShowNews(false);
-                    //TODO: optin close
-                    notifyItemChanged(2);
+
+                    notifyItemRangeChanged(getStatsCount() + getTopSitesCount(), 2);
                 }
             });
 
             newsOptinViewHolder.optinLearnMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    TabUtils.openUrlInSameTab(BraveConstants.BRAVE_LEARN_MORE_URL);
+                    TabUtils.openUrlInSameTab(BraveConstants.BRAVE_NEWS_LEARN_MORE_URL);
                 }
             });
 
             newsOptinViewHolder.optinButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    newsOptinViewHolder.optinButton.setClickable(false);
-                    newsOptinViewHolder.optinTv.setVisibility(View.INVISIBLE);
-                    newsOptinViewHolder.optinLoadingSpinner.setVisibility(View.VISIBLE);
-
                     SharedPreferences sharedPreferences = ContextUtils.getAppSharedPreferences();
                     SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
                     sharedPreferencesEditor.putBoolean(BraveNewsPreferences.PREF_SHOW_OPTIN, false);
@@ -231,27 +327,39 @@ public class BraveNtpAdapter
                     BravePrefServiceBridge.getInstance().setNewsOptIn(true);
                     BravePrefServiceBridge.getInstance().setShowNews(true);
 
-                    //TODO: next things
-
-                    notifyItemChanged(2);
+                    mOnBraveNtpListener.getFeed(false);
                 }
             });
-        } else if(holder instanceof NewsLoadingViewHolder) {
+
+        } else if (holder instanceof NewsLoadingViewHolder) {
             NewsLoadingViewHolder newsLoadingViewHolder = (NewsLoadingViewHolder) holder;
 
-        } else if(holder instanceof NewsViewHolder) {
+        } else if (holder instanceof NewsViewHolder) {
             NewsViewHolder newsViewHolder = (NewsViewHolder) holder;
+            newsViewHolder.linearLayout.removeAllViews();
+            int newsPosition =
+                    position - getStatsCount() - getTopSitesCount() - 1 - getNewContentCount();
+            FeedItemsCard newsItem = mNewsItems.get(newsPosition);
+            if (mBraveNewsController != null) {
+                new CardBuilderFeedCard(mBraveNewsController, mGlide, newsViewHolder.linearLayout,
+                        mActivity, newsPosition, newsItem, newsItem.getCardType());
+            }
         }
     }
 
     @Override
     public int getItemCount() {
-        if(isNewsOptin() || isNewsLoading()) {
-            return 4;
-        } else if(shouldDisplayNews()){
-            return 3+newsItems.size();
+        int statsCount = getStatsCount();
+        int topSitesCount = getTopSitesCount();
+        int newsLoadingCount = shouldDisplayNewsLoading() ? 1 : 0;
+
+        if (isNewsOptin()) {
+            return statsCount + topSitesCount + 2 + newsLoadingCount;
+        } else if (mOnBraveNtpListener.shouldDisplayNews()) {
+            return statsCount + topSitesCount + 1 + getNewContentCount() + newsLoadingCount
+                    + mNewsItems.size();
         } else {
-            return 3;
+            return statsCount + topSitesCount + 1 + newsLoadingCount;
         }
     }
 
@@ -260,81 +368,159 @@ public class BraveNtpAdapter
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
         if (viewType == TYPE_STATS) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.brave_stats_layout, parent, false);
+            view = LayoutInflater.from(parent.getContext())
+                           .inflate(R.layout.brave_stats_layout, parent, false);
             return new StatsViewHolder(view);
 
         } else if (viewType == TYPE_TOP_SITES) {
-            return new TopSitesViewHolder(siteSectionView);
+            return new TopSitesViewHolder(mSiteSectionView);
+
+        } else if (viewType == TYPE_NEW_CONTENT) {
+            view = LayoutInflater.from(parent.getContext())
+                           .inflate(R.layout.brave_news_load_new_content, parent, false);
+            return new NewContentViewHolder(view);
 
         } else if (viewType == TYPE_IMAGE_CREDIT) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.ntp_image_credit, parent, false);
+            view = LayoutInflater.from(parent.getContext())
+                           .inflate(R.layout.ntp_image_credit, parent, false);
             return new ImageCreditViewHolder(view);
 
         } else if (viewType == TYPE_NEWS_OPTIN) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.optin_layout, parent, false);
+            view = LayoutInflater.from(parent.getContext())
+                           .inflate(R.layout.optin_layout, parent, false);
             return new NewsOptinViewHolder(view);
 
         } else if (viewType == TYPE_NEWS_LOADING) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_loading, parent, false);
+            view = LayoutInflater.from(parent.getContext())
+                           .inflate(R.layout.news_loading, parent, false);
             return new NewsLoadingViewHolder(view);
 
         } else {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.brave_news_row, parent, false);
+            view = LayoutInflater.from(parent.getContext())
+                           .inflate(R.layout.brave_news_row, parent, false);
             return new NewsViewHolder(view);
         }
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0) {
+        int statsCount = getStatsCount();
+        int topSitesCount = getTopSitesCount();
+
+        if (position == 0 && statsCount == 1) {
             return TYPE_STATS;
-        } else if (position == 1) {
+        } else if (topSitesCount == 1 && position == statsCount) {
             return TYPE_TOP_SITES;
-        } else if (position == 2) {
+        } else if (position == statsCount + topSitesCount && mIsNewContent) {
+            return TYPE_NEW_CONTENT;
+        } else if ((position == statsCount + topSitesCount && !mIsNewContent)
+                || (position == statsCount + topSitesCount + 1 && mIsNewContent)) {
             return TYPE_IMAGE_CREDIT;
-        } else if (position == 3 && isNewsOptin()) {
+        } else if (position == statsCount + topSitesCount + 1 && isNewsOptin() && !mIsNewContent) {
             return TYPE_NEWS_OPTIN;
-        } else if (position == 3 && isNewsLoading()) {
+        } else if (position == statsCount + topSitesCount + 1 && shouldDisplayNewsLoading()
+                && !mIsNewContent) {
             return TYPE_NEWS_LOADING;
         } else {
             return TYPE_NEWS;
         }
     }
 
-    private boolean isNewsOptin() {
-        
-        boolean isNewsOn = BravePrefServiceBridge.getInstance().getNewsOptIn();
-        boolean isShowOptin = ContextUtils.getAppSharedPreferences().getBoolean(BraveNewsPreferences.PREF_SHOW_OPTIN, true);
-        boolean isShowNewsOn = BravePrefServiceBridge.getInstance().getShowNews();
-        Log.e("tapan","isNewsOn:"+isNewsOn+",isShowOptin:"+isShowOptin+",isShowNewsOn:"+isShowNewsOn);
-        return (!isShowNewsOn && isShowOptin) || (isNewsOn && isShowOptin);
+    public int getStatsCount() {
+        return isStatsEnabled() ? 1 : 0;
     }
 
-    private boolean isNewsLoading() {
-        return BravePrefServiceBridge.getInstance().getShowNews() && BravePrefServiceBridge.getInstance().getNewsOptIn();
+    private boolean isStatsEnabled() {
+        return true;
     }
 
-    private boolean shouldDisplayNews() {
-
-        return BravePrefServiceBridge.getInstance().getShowNews();
+    public int getTopSitesCount() {
+        return isTopSitesEnabled() ? 1 : 0;
     }
-    
+
+    private boolean isTopSitesEnabled() {
+        return true;
+    }
+
+    public boolean isNewsOptin() {
+        return ContextUtils.getAppSharedPreferences().getBoolean(
+                BraveNewsPreferences.PREF_SHOW_OPTIN, true);
+    }
+
+    public boolean shouldDisplayNewsLoading() {
+        return mIsNewsLoading && BravePrefServiceBridge.getInstance().getShowNews()
+                && BravePrefServiceBridge.getInstance().getNewsOptIn();
+    }
+
+    public int getNewContentLayoutHeight() {
+        return mNewContentHeight;
+    }
+
+    public int getTopMarginImageCredit() {
+        return mTopMarginImageCredit;
+    }
+
+    public void setNewsLoading(boolean isNewsLoading) {
+        mIsNewsLoading = isNewsLoading;
+        notifyItemChanged(getStatsCount() + getTopSitesCount() + 1);
+    }
+
+    public void setNewContent(boolean isNewContent) {
+        if (mIsNewContent != isNewContent) {
+            mIsNewContent = isNewContent;
+            int newContentPosition = getStatsCount() + getTopSitesCount();
+            if (!isNewContent) {
+                mIsNewContentLoading = false;
+                notifyItemRemoved(newContentPosition);
+            } else {
+                notifyItemInserted(newContentPosition);
+            }
+        }
+    }
+
+    public boolean isNewContent() {
+        return mIsNewContent;
+    }
+
+    public void setNewContentLoading(boolean isNewContentLoading) {
+        mIsNewContentLoading = isNewContentLoading;
+        notifyItemChanged(getStatsCount() + getTopSitesCount());
+    }
+
+    public int getNewContentCount() {
+        return mIsNewContent ? 1 : 0;
+    }
+
     public void setSponsoredLogo(Wallpaper wallpaper, Bitmap sponsoredLogo) {
-
-        this.wallpaper = wallpaper;
-        this.sponsoredLogo = sponsoredLogo;
-        notifyItemChanged(2);
-        //notifyDataSetChanged();
+        mWallpaper = wallpaper;
+        mSponsoredLogo = sponsoredLogo;
+        notifyItemChanged(getStatsCount() + getTopSitesCount() + getNewContentCount());
     }
 
     public void setNtpImage(NTPImage ntpImage) {
+        mNtpImage = ntpImage;
+        notifyItemChanged(getStatsCount() + getTopSitesCount() + getNewContentCount());
+    }
 
-        this.ntpImage = ntpImage;
-        notifyItemChanged(2);
-        //notifyDataSetChanged();
+    public void setBraveNewsController(BraveNewsController braveNewsController) {
+        mBraveNewsController = braveNewsController;
+        notifyItemChanged(getStatsCount() + getTopSitesCount() + getNewContentCount() + 1);
+    }
+
+    public void setImageCreditAlpha(float alpha) {
+        if (mImageCreditAlpha != alpha) {
+            mImageCreditAlpha = alpha;
+            notifyItemChanged(getStatsCount() + getTopSitesCount() + getNewContentCount());
+        }
+    }
+
+    public void setRecyclerViewHeight(int recyclerViewHeight) {
+        mRecyclerViewHeight = recyclerViewHeight;
+        notifyItemRangeChanged(0, getStatsCount() + getTopSitesCount() + getNewContentCount() + 1);
     }
 
     public static class StatsViewHolder extends RecyclerView.ViewHolder {
+        LinearLayout ntpStatsLayout;
         LinearLayout titleLayout;
         TextView adsBlockedCountTv;
         TextView adsBlockedCountTextTv;
@@ -345,24 +531,45 @@ public class BraveNtpAdapter
 
         StatsViewHolder(View itemView) {
             super(itemView);
+            this.ntpStatsLayout = (LinearLayout) itemView.findViewById(R.id.ntp_stats_layout);
             this.titleLayout = (LinearLayout) itemView.findViewById(R.id.brave_stats_title_layout);
-            this.adsBlockedCountTv = (TextView) itemView.findViewById(R.id.brave_stats_text_ads_count);
-            this.adsBlockedCountTextTv = (TextView) itemView.findViewById(R.id.brave_stats_text_ads_count_text);
-            this.dataSavedValueTv = (TextView) itemView.findViewById(R.id.brave_stats_data_saved_value);
-            this.dataSavedValueTextTv = (TextView) itemView.findViewById(R.id.brave_stats_data_saved_value_text);
-            this.estTimeSavedCountTv = (TextView) itemView.findViewById(R.id.brave_stats_text_time_count);
-            this.estTimeSavedCountTextTv = (TextView) itemView.findViewById(R.id.brave_stats_text_time_count_text);
+            this.adsBlockedCountTv =
+                    (TextView) itemView.findViewById(R.id.brave_stats_text_ads_count);
+            this.adsBlockedCountTextTv =
+                    (TextView) itemView.findViewById(R.id.brave_stats_text_ads_count_text);
+            this.dataSavedValueTv =
+                    (TextView) itemView.findViewById(R.id.brave_stats_data_saved_value);
+            this.dataSavedValueTextTv =
+                    (TextView) itemView.findViewById(R.id.brave_stats_data_saved_value_text);
+            this.estTimeSavedCountTv =
+                    (TextView) itemView.findViewById(R.id.brave_stats_text_time_count);
+            this.estTimeSavedCountTextTv =
+                    (TextView) itemView.findViewById(R.id.brave_stats_text_time_count_text);
         }
     }
 
     public static class TopSitesViewHolder extends RecyclerView.ViewHolder {
-        
         TopSitesViewHolder(View itemView) {
             super(itemView);
         }
     }
 
+    public static class NewContentViewHolder extends RecyclerView.ViewHolder {
+        LinearLayout newContentLayout;
+        TextView newContentText;
+        ProgressBar newContentProgressBar;
+
+        NewContentViewHolder(View itemView) {
+            super(itemView);
+            this.newContentLayout = (LinearLayout) itemView.findViewById(R.id.new_content_layout);
+            this.newContentProgressBar =
+                    (ProgressBar) itemView.findViewById(R.id.new_content_loading_spinner);
+            this.newContentText = (TextView) itemView.findViewById(R.id.new_content_button_text);
+        }
+    }
+
     public static class ImageCreditViewHolder extends RecyclerView.ViewHolder {
+        LinearLayout ntpImageCreditLayout;
         FrameLayout imageCreditLayout;
         FloatingActionButton superReferralLogo;
         TextView creditTv;
@@ -370,8 +577,11 @@ public class BraveNtpAdapter
 
         ImageCreditViewHolder(View itemView) {
             super(itemView);
+            this.ntpImageCreditLayout =
+                    (LinearLayout) itemView.findViewById(R.id.ntp_image_credit_layout);
             this.imageCreditLayout = (FrameLayout) itemView.findViewById(R.id.image_credit_layout);
-            this.superReferralLogo = (FloatingActionButton) itemView.findViewById(R.id.super_referral_logo);
+            this.superReferralLogo =
+                    (FloatingActionButton) itemView.findViewById(R.id.super_referral_logo);
             this.creditTv = (TextView) itemView.findViewById(R.id.credit_text);
             this.sponsoredLogo = (ImageView) itemView.findViewById(R.id.sponsored_logo);
         }
