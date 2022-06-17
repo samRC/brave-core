@@ -42,17 +42,17 @@ constexpr char kInvalidCreativeInstanceId[] = "";
 class BatAdsNewTabPageAdIfAdsDisabledTest : public NewTabPageAdObserver,
                                             public UnitTestBase {
  protected:
-  BatAdsNewTabPageAdIfAdsDisabledTest()
-      : new_tab_page_ad_(std::make_unique<NewTabPageAd>()) {
-    new_tab_page_ad_->AddObserver(this);
-  }
+  BatAdsNewTabPageAdIfAdsDisabledTest() = default;
 
   ~BatAdsNewTabPageAdIfAdsDisabledTest() override = default;
 
   void SetUp() override {
-    UnitTestBase::SetUpForTesting(/* integration_test */ false);
+    UnitTestBase::SetUp();
 
     AdsClientHelper::Get()->SetBooleanPref(prefs::kEnabled, false);
+
+    new_tab_page_ad_ = std::make_unique<NewTabPageAd>();
+    new_tab_page_ad_->AddObserver(this);
   }
 
   void OnNewTabPageAdServed(const NewTabPageAdInfo& ad) override {
@@ -253,6 +253,8 @@ TEST_F(BatAdsNewTabPageAdIfAdsDisabledTest,
   FireAdEvents(ad_event, ads_per_hour - 1);
 
   const std::string& placement_id = base::GenerateGUID();
+
+  AdvanceClockBy(base::Minutes(5));
 
   // Act
   new_tab_page_ad_->FireEvent(placement_id, creative_ad.creative_instance_id,
